@@ -2,18 +2,6 @@
 
 Programming in a nutshell
 
-# How to use
-
-1. rename project folder (you may have already done so before you open me with VSCode)
-1. replace description in `readme.md`
-1. Git  
-   ```bash
-   rm -rf .git
-   git init
-   git add -A
-   git commit -m "initial"
-   ```
-1. delete this section
 
 -----------------------
 

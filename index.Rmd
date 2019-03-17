@@ -1,0 +1,14 @@
+--- 
+title: "Programming in a nutshell"
+author: "Zhuoer Dong"
+date: "`r Sys.Date()`"
+knit: "bookdown::render_book"
+site: bookdown::bookdown_site
+output: 
+    bookdown::gitbook
+---
+
+# preface {-}
+
+Zhuoer Dong's summary of programming experience
+

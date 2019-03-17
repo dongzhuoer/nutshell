@@ -1,10 +1,28 @@
+# cache & env->global fields are customizable
 language: generic
-dist: xenial
+service: docker
 git:
   depth: false
-  submodules: false
-  
-script: skip
+cache: 
+  directories: [$TRAVIS_BUILD_DIR/_bookdown_files/, $HOME/.local/lib/R/]
+env:
+  global: 
+    # general
+    - input_git=$TRAVIS_BUILD_DIR
+    - repo_git=https://gitlab-ci-token:$GITLAB_TOEKN@gitlab.com/dongzhuoer/nutshell.gitbook.git
+    - repo_branch=master
+    - work_dir=$TRAVIS_BUILD_DIR/..
+    # specific
+    - extra_input_dir=$TRAVIS_BUILD_DIR
+    - system_dep=""   
+    - install_pkg="Sys.setenv('GITHUB_PAT' = '$GITHUB_PAT');"
+    - rmd_dir=""
+    - to_work_dir=..   # $work_dir == {setwd('input/$rmd_dir'); setwd('$to_work_dir')}
+    - url=
+    - custom_yaml=""
+    - render_args=""
+
+script: wget https://raw.githubusercontent.com/dongzhuoer/build-bookdown-demo/master/build.sh && bash build.sh
 
 notifications:
   email: false

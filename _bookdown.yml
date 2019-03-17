@@ -1,0 +1,7 @@
+book_filename: nutshell
+output_dir: gitbook
+delete_merged_file: yes
+new_session: yes
+edit: https://github.com/dongzhuoer/nutshell/edit/master/%s
+rmd_files:
+  - index.Rmd

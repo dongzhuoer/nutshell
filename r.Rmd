@@ -1,0 +1,170 @@
+# R language
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE)
+```
+
+
+
+## Tips
+
+- export Excel: `writexl::write_xlsx()`
+- `match.arg()`
+- `cat("\014") ` clear console
+- `remotes::package_deps(.packages(T)) %>% tibble::as_tibble()`
+
+
+
+## Portable code
+
+to be portable, `.Rprofile` should not cause error
+
+```r
+if ('pkg' %in% .packages(T)) options('defaultPackages' = unique(c(getOption('defaultPackages'), 'pkg')))
+```
+
+
+
+## function, evaluation, environment
+
+### core rules
+
+1. lazy evaluation to decide when to evaluate the parameter, 
+2. call stack to decide where (start point) to evaluate the argument
+3. lexically scoping to where to find undefined symbol in the argument
+
+### examples
+
+```{r}
+f <- function(x) {y <- 1; message('in f()'); x;}
+
+f(message('evaluate argument'))
+```
+
+In `f()`, the parameter `x` is not evaluated until it's used, i.e., after `message('in f()')`.
+
+
+```{r}
+f <- function(x) {message('in f()'); g(x)}
+g <- function(x) {message('in g()'); x}
+
+f(message('evaluate argument'))
+```
+
+In `f()`, passing the parameter `x` as argument for `g()` doesn't evaluate it.
+
+
+```{r}
+f <- function(x) {message('in f()'); g(x)}
+g <- function(x) {message('in g()'); y <- 2; x}
+
+y <- 1
+f(message('y = ', y))
+```
+
+As for where the argument `message('y = ', y)` is evaluated, we start from the execution env of `g()`, along call stack, travel to the caller env of `f()`, i.e., the global env.
+
+```{r}
+g <- function(u) (u + v) / 2  
+h <- function(u) {
+    v <- 1  
+    g(u)    
+}    
+v <- 2  
+h(10)
+```
+
+Although `g()` is called inside `h()`, it finds `v` in where it's defined, i.e., the global env.
+
+
+### other details
+
+1. the evaluation of argument happens only once, refer to [here](https://bookdown.dongzhuoer.com/hadley/adv-r/lazy-evaluation.html#promises)
+1. lexically scoping is implemented in that the execution environment's parent is function environment, i.e., when the function is created. 
+1. call stack is implemented in that a frame's parent is the previous frame, refer to [here](https://bookdown.dongzhuoer.com/hadley/adv-r/call-stack.html#frames)
+1. when you write a function factory, you may need to [force evaluation](https://bookdown.dongzhuoer.com/hadley/adv-r/factory-fundamentals.html#forcing-evaluation)
+
+
+
+## style
+
+### `<-`
+
+1. function definition
+2. initialize varible, especially when definition is far from first usage (initialize means you create the varible only once)
+3. `foobar(...) <- value`, though it's okay to use `=`, but modifing arguments using function is rare in R, so use `<-` can help you remind what you are doing and be consistency with how the function is defined
+
+
+
+## Unnoticed feature
+
+```{r}
+as.character(NA) %T>% print %>% class()
+
+as.character(NULL) %T>% print %>% class()
+```
+
+```{r}
+0xFfE4
+```
+
+
+## install packages
+
+### Bioconductor
+
+**remotes** allows you specify a certain Bioconductor version when installing packages, like
+`remotes::install_bioc('3.7/ggtree')`. But this only works _package-wise_, i,e, if you install other package, it still use the default Bioconductor version ^[At the time of this writing, `remotes::install_bioc('clusterProfiler')` would use Bioconductor 3.8]. 
+
+If you want all Bioconductor packages comes from the same Bioconductor version, use
+`BiocManager::install(version = '3.7')`.
+
+
+
+### Administration and Maintances of R Packages
+
+https://mirrors.tuna.tsinghua.edu.cn/CRAN/bin/linux/ubuntu/README.html
+
+There are typically three directories: `"/usr/local/lib/R/site-library"`, `"/usr/lib/R/site-library"`, `"/usr/lib/R/library"`. If you use RStudio, you will even a forth `"/home/${USER}/R/x86_64-pc-linux-gnu-library/3.4"`.
+
+I perfer to remove `"/usr/local/lib/R/site-library"` since I get duplicated packages[^1] when I use `source("https://install-github.me/username/repo")`.
+
+I think it's wise to keep `"/usr/lib/R/library"` clean, which makes it very convenient to update or reinstall R.
+
+1. when there are many users, for example a server with RStudio Server and Shiny Server installed
+
+    Use `sudo R -e "install.packages(package, repos='https://cran.rstudio.com/', lib = '/usr/lib/R/site-library/')"` to install **most** packages, especially those needed by hosted Shiny apps.
+
+    If someone log into RStudio Server, he can install **a few** packages into `${HOME}/.local/lib/R` to meet his particular desire.
+
+1. when there are only one user, such as your own Ubuntu
+
+    edit `~/Renviron` to change the forth directory to `"${HOME}/.local/lib/R`. 
+
+    Install your packages using RStudio. 
+
+    In theory, `"/usr/lib/R/site-library"` should keep empty.
+
+In both case, you should be awared that install packages as nomral user may cause duplicated package (when one of core packages has been updated). 
+
+[^1]: they both exist in `"/usr/local/lib/R/site-library"` and `"/usr/lib/R/site-library"`
+
+
+## Statistics
+
+```r
+?e1071::skewness
+?e1071::kurtosis
+
+?TukeyHSD
+```
+
+
+
+
+
+
+
+
+

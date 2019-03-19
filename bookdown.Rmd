@@ -1,0 +1,89 @@
+# bookdown，将来写一本书时可能用到的
+
+
+
+## content
+
+### conventions 
+
+- ``` `` ``` for inline code, file name and menu command
+- **bold** to indicate special meaning ^[For example, in normal context, knitr is treated as a typo; but **knitr** means a R package]
+-  _italic_ to emphasis important points 
+
+###  custom header number and filename 
+
+```markdown
+## An Introduction {#my-custom-id-used-for-html-filename}
+## unnumbered chapter {-}
+## another unnumbered chapter {.unnumbered}
+### section is also okay {#demo-section -}
+```
+
+
+## configuration 
+
+### `_bookdown.yml`
+
+```yaml
+book_filename: *
+output_dir: gitbook
+delete_merged_file: yes
+new_session: yes
+language:
+  label:
+    fig: "Figure "
+    tab: "Table "
+  ui:
+    edit: "Edit"
+    chapter_name: "Chapter "
+rmd_files:
+  - "index.Rmd"
+  - "body.Rmd"
+```
+
+### `_output.yml`
+
+```yaml
+bookdown::gitbook:
+  dev: svglite
+  split_by: section+number
+  config:
+    toc:
+      collapse: section
+      before: |
+        <li><span>one line</span></li>
+        <li><span>a second line</span></li>
+      after: <li><a href="https://github.com/rstudio/bookdown" >Built by R bookdown</a></li>
+    edit: https://github.com/dongzhuoer/*/edit/master/%s
+    sharing:
+      github: yes
+      facebook: no
+      twitter: no
+```
+
+### `index.Rmd`
+
+```
+---
+title: "*"
+author: "Zhuoer Dong"
+date: "`r Sys.Date()`"
+knit: "bookdown::render_book"
+site: bookdown::bookdown_site
+description: "*"
+github-repo: dongzhuoer/*
+---
+
+## Perface {#perface -}
+```
+
+
+## others
+
+- you may inset the following to the head of chapter `.Rmd`
+
+  ```yaml
+  knit: "bookdown::preview_chapter"
+  ```
+
+- you should use `-` rather than `_` for figure label, to make cross-reference work.

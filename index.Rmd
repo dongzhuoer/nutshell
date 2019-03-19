@@ -9,9 +9,12 @@ github-repo: dongzhuoer/nutshell
 monofont: "Source Code Pro"
 output: 
     bookdown::gitbook:
+        dev: png
         highlight: haddock
         css: bookdown.css
         config:
+            toc:
+                collapse: section
             download: no
             sharing:
                 github: yes
@@ -20,6 +23,11 @@ output:
             fontsettings:
                 theme: sepia
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = T, error = T, cache = T)
+#, dpi = 144, fig.align = 'center', fig.show = 'asis', update.cache = T)
+```
 
 # preface {-}
 

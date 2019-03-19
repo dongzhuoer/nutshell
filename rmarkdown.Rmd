@@ -1,0 +1,163 @@
+# R Markdown
+
+
+## good example
+
+- `06.junior spring/科研训练Ⅰ`: source `.Rmd`, output `.html`, code for generating figures of a research project
+- `research/xparis`: multiple output format for different usage
+- `07.senior autumn/生物科学综合实验`: 生成 Word 版论文，这里还是事后进行修改，提供模板会好很多
+
+
+
+## include `.Rmd` source
+
+See the `.Rmd` of this post for how I produce the following:
+
+`` `r '\x60r Sys.Date()\x60'` ``
+
+````markdown
+`r ''````{r}
+mean(1:5)
+```
+````
+
+
+
+## reproducible 
+
+### Date
+
+In yaml data, write the date you update the source code, 
+
+```markdown
+---
+date: "2019-01-24"
+---
+```
+
+then include the data you render the `.Rmd` file (run the code)
+
+```markdown
+rendered on `r '\x60r Sys.Date()\x60'`
+```
+
+
+
+### install R package
+
+- user can easily identify the packages needed
+- user can conveniently install them ^[instead of giving a list and asking the user to manually install one by one]
+- avoid silently installing packages on others' computer, while myself just need to render the `.Rmd`
+
+````markdown
+`r ''````{r install-pkg, message=FALSE, eval=getOption('zhuoer.auto.install.package', F)}
+## install needed R packages
+cran_pkg <- c('magrittr', 'tidyverse', 'BiocManager', 'remotes')
+cran_pkg <- setdiff(cran_pkg, .packages(T))
+if (length(cran_pkg) > 0)   install.packages(cran_pkg)
+
+bioc_pkg <- c('ggtree')
+bioc_pkg <- setdiff(bioc_pkg, .packages(T))
+if (length(bioc_pkg) > 0)   BiocManager::install(bioc_pkg)
+
+github_pkg <- c(paristools = 'dongzhuoer/paristools')
+github_pkg <- github_pkg[setdiff( names(github_pkg), .packages(T) )]
+if (length(github_pkg) > 0) remotes::install_github(github_pkg)
+```
+````
+
+### VSCode
+
+`.vscode/tasks.json`
+```json
+{
+    // https://code.visualstudio.com/docs/editor/tasks
+    "version": "2.0.0",
+    "type": "shell",
+    "problemMatcher": [],
+    "presentation": {
+        "reveal": "silent",
+    },
+    "tasks": [
+        {
+            "label": "build",
+            "command": "R --slave -e \"rmarkdown::render('main.Rmd')\"",
+            "group": {
+                "kind": "build",
+                "isDefault": true,
+            },
+        },
+        {
+            "label": "view",
+            "command": "google-chrome main.html",
+        },
+    ]
+}
+```
+
+### other
+
+这里还加了创建用到的文件夹（避免 `read_rds()` 等报错）
+
+```r
+'dir-name' %>% {if (!dir.exists(.)) dir.create(.)}
+```
+
+
+## 调整输出格式
+
+### 显示小数
+
+```{r}
+rnorm(10) %>% formatC(digits = 3, format = 'f')
+```
+
+### 修改宽度
+
+有时候嫌内容太窄（尤其是 print tibble 和用 R 生成的表格），需要把文档调宽一点。
+  
+具体区别没分析，两个都写上吧
+  
+```r
+knitr::opts_knit$set(width = 100)
+options(width = 100)
+```
+
+## trouble-shotting
+
+### character in pdf (svglite) device
+
+(At least for `svglite`) knitr first prints the plot to a pdf device and then redraws it using the chunk device. If you plot contains character, the pdf device will generate thousands of warnings even the final plot look well.
+
+the solution lives [here](https://yihui.name/knitr/demo/graphics/#encoding-of-multibyte-characters) ^[I don't like the idea of setting encoding.]:
+
+```r
+options(device = "cairo_pdf")
+```
+
+### debug `rmarkdown::render()`
+
+```r
+old_chunk_hook <- knitr::knit_hooks$get('chunk')
+new_chunk_hook <- function(x, options) {
+    writeLines(options$code)
+    old_chunk_hook(x, options)
+}
+knitr::knit_hooks$set(chunk = new_chunk_hook)
+knitr::opts_chunk$set(mutable_var = Sys.time()) # disable cache
+```
+
+
+## pandoc tips
+
+- syntax highlight
+
+  ```bash
+  pandoc --list-highlight-languages
+  pandoc --list-highlight-styles
+  ```
+
+- `head_include` won't work without other options (such as `-s`), since the default output format seems to be HTML fragment.
+
+
+

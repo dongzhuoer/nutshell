@@ -1,0 +1,65 @@
+# build others' bookdown book in my preference
+
+
+## customize other's book
+
+关于目录
+
+  - 章超过一页一般就collapse，如 r4ds, rmarkdown
+  - 所有内容在 2～3页，展开显示，如 blogdown
+  - 子标题严重不均匀，尤其要展开，如 bookdown
+
+## Tips
+
+### parse dependency
+
+```bash
+# possibly used pacakge
+cat *.Rmd | grep -Po '[\w\.]+(?=::)' | sort -u | sed 's/$/,/' 
+# cited package
+cat *.Rmd | grep -Po '(?<=\[@R-)[\w\.]+' | sort -u | sed 's/$/,/' 
+```
+
+## build on travis
+
+We offer two examples:
+
+- r4ds: https://github.com/dongzhuoer/build-r4ds/blob/master/.travis.yml
+- yihui-blogdown: https://github.com/dongzhuoer/build-yihui-blogdown/blob/master/.travis.yml
+
+### details
+
+The biggest restraint is that `bookdown::render_book()` requires workspace at the book folder.
+
+For _blogdown_, `.Rmd` lives in `docs/`. If you `setwd()` to there, many paths would be relative to it (like `../../output`, `../../extra/_output.yaml`). 
+
+So I thought about adding a environment variable `input_sub_dir`. But _blogdown_ doesn't collaborate, it refer to the some source code of the package by `../R/***.R`.
+
+Suddenly, I realized that instead of setting every path relative to workspace, we can have `to_work_dir` to walk to `$work_dir`. In this way, every other path remains unchanged (`output`, `extra/_output.yaml`), user only need to customize `rmd_dir` & `to_work_dir`, like `rmd_dir=. to_work_dir=..`, `rmd_dir=docs to_work_dir=../..`.
+
+## add a new book
+
+
+1. clone Git repo (`github-copy user/repo`)
+1. build book on local: 
+   ```r
+   bookdown::render_book(''); browseURL('_book/index.html')
+   ```
+1. create a repo on GitLab: 
+   - open `empty`, 
+   - `export repo=repo_name`
+   - push to GitLab using following code
+   ```bash
+   git remote add gitlab git@gitlab.com:dongzhuoer/$repo.gitbook.git
+   git push -u gitlab master
+   git remote remove gitlab
+   ```
+1. create build repo
+   - create repo on GitHub
+   - copy a `build-*` and rename, remove old remote, then push to GitHub the normal way
+
+1. travis CI
+   add tokens to environment variable (maybe )
+
+
+1. `bookdown.dongzhuoer.com`

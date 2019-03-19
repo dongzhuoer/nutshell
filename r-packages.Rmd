@@ -1,0 +1,166 @@
+# R packages: Zhuoer's development style
+
+## create
+
+1. copy and modify `minir`
+1. use RStudio: create a package project, _delete_ `NAMESPACE`, `Configure Build Tools...` -> check `Generate documentation with Roxygen`
+
+
+## dependency
+
+
+- All needed packages should be listed in `Imports` ^[We don't use `Depends`]. `Remotes` _only_ specify where to _find_ a package listed in `Imports` if not CRAN.
+- If you want to use a certain Bioconductor version, all Bioconductor packages should be the same version (e.g. `bioc::3.7/pkg`), refer to [here](../r/#bioconductor).
+
+
+## namespace
+
+Usually, `@importFrom` should appear at the function using it (multiple times is okay, roxygen2 handles that).
+
+But some (_too_) common things are put into `R/aaa.R`:
+
+```r
+#' @importFrom magrittr %>%
+#' @export
+magrittr::`%>%`
+```
+
+1. Here we import `%>%`, since `devtools::test()` won't help us. Becasue testthat exports `%>%` (see `` testthat::`%>%` `` & `` ?`%>%` ``)
+2. Exporting `%>%` makes it easier to write [tests](#testthat) & examples. Althougth you can live without it (again, testthat exports %>%), users would be confusing when run the examples since the basic assumption is they have  `library()` your package.
+
+Opionally, you can also import other pipes:
+
+```r
+#' @importFrom magrittr %T>%
+#'
+NULL
+```
+
+> Note: `NULL` is necessary, otherwise the command would be ignored.
+
+Other aspects would be talked in Documentation section.
+
+
+## Document
+
+- common fields: [rGEO](https://github.com/dongzhuoer/rGEO/blob/master/R/read-gse.R) (`@description` not used there)
+- multiple function: [rexseek](https://github.com/dongzhuoer/rexseek/blob/master/R/matrix-process.R)
+
+Here we talk about the last line (must close to function definition)
+
+```r
+#' @export
+#' @keywords internal
+#' @noRd
+```
+
+1. full support
+1. `:::`, can use `?` to get help, but not listed in index 
+1. `:::`, documentation only avaliable in source code file
+
+
+A small caveat RStudio defaults to NOT update document when you `Build` the package. ^[So when you find something is wrong with Roxygen while developing a package (which often happens after you copy/move the package folder or do somethinf similar, e.g. reinstall RStudio or even Windows), you may consider **Build** panel => **More** => **Configure Build Tools...** => **COnfigure...** => check **Build & Reload**]
+
+
+
+## pkgdown
+
+official documentation
+
+- [Get startted](https://pkgdown.r-lib.org/articles/pkgdown.html)
+- [YAML config](https://pkgdown.r-lib.org/reference/build_site.html#yaml-config)
+
+
+## data
+
+For example of using cache, refer to [rGEO.data](https://github.com/dongzhuoer/rGEO.data/blob/master/R-raw/data.Rmd)
+
+- `devtools::ues_data()` store each object and its name in separate `.rds` file under `data/` ^[Although the `.rds` file is usually named after the corresponding object, it's not compulsory. You can change the filename and rebuild the package, the name of exported data remain unchaged.]
+
+- `devtools::ues_data(internal=TURE)` store all the internal data in a single file, `R/sysdata.rda`. Every time you call this function, the old file would be overwrited.
+
+
+
+## testthat
+
+If you want to run some code, you need add a test, otherwise it would be skipped
+
+```r
+testthat::test_that('foobar()', {
+    testthat::expect_true(T);
+
+    print('haha, I\'m not skipped')    
+});
+```
+
+pipe, refer to [namespace](#namespace) above
+
+```r
+testthat::test_that('foobar()', {
+    testthat::expect_true(T);
+
+    'Nice, I can use %>% ' %>% print()    
+});
+```
+
+Travis
+
+```r
+tolower(Sys.getenv('CI')) != 'true')
+```
+
+## maintaining
+
+- Not Yet Used
+  ```{r, error = TRUE, collapse = TRUE}
+  hypotenuse <- function(x, y, p = 2) {
+    if (!missing(p))    .NotYetUsed("p")
+    sqrt(x ^ 2 + y ^ 2)
+  }
+  
+  hypotenuse(5, 12)
+  hypotenuse(5, 12, 1)   
+  ```
+
+- Not Yet Implemented
+  ```{r, error = TRUE, collapse = TRUE}
+  triangular <- function(n) {
+    .NotYetImplemented()
+  }
+  
+  triangular()
+  ```
+
+- Deprecated
+  ```{r, error = TRUE, collapse = TRUE}
+  hypotenuse <- function(x, y, p = 2) {  
+    .Deprecated("p_norm")
+    (x ^ p + y ^ p) ^ (1 / p)
+  }
+  
+  hypotenuse(5, 12) 
+  ```
+
+- Defunct
+  ```{r, error = TRUE, collapse = TRUE}
+  hypotenuse <- function(x, y, p = 2) {  
+    .Defunct("p_norm")
+  }
+  
+  hypotenuse(5, 12) 
+  ```
+
+
+
+## Travis CI
+
+
+### build
+
+### test
+
+I assume that all my packages use testthat and contain at least a `test-*.R` ^[`devtools::test()` only requires `tests/testthat` directory, but `testthat::test_dir()` dictate there must be a R script].
+
+Alternatively, a package can insert `ls tests/testthat/*.R || travis_terminate 0` into `script` field (before `devtools::test()`)
+
+

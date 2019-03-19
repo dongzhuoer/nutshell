@@ -1,0 +1,84 @@
+# Travis CI
+
+
+## apt packages
+
+```yaml
+addons:
+  apt:
+    update: true
+    packages:
+      - cmake
+      - time
+```
+
+## tips
+
+### trigger build
+
+need to set the environment variable `TRAVIS_TOKEN`
+
+```yaml
+after_success:
+  - user=dongzhuoer; repo=empty; body='{ "request":{"branch":"master", "message":"rebuilt $TRAVIS_REPO_SLUG"} }'
+  - curl -s -X POST -H "Authorization:token $TRAVIS_TOKEN" -H "Content-Type:application/json" -H "Accept:application/json" -H "Travis-API-Version:3" -d "$body" "https://api.travis-ci.com/repo/$user%2F$repo/requests"
+```
+
+
+## automatically tasks template
+
+### Overview
+
+> Generally, we get input from GitHub, install needed software, build output, finally deploy to GitLab.
+
+We abstract the follwing structure:
+
+```
+.
+|---- $TRAVIS_BUILD_DIR 
+|---- input
+|---- output
+|---- repo: for deploying
+|---- extra: other files needed to minor tune the building process, often shipped in the build repo
+```
+
+### Travis code
+
+```yaml
+language: generic
+git:
+  depth: false
+env:
+  global: 
+    - input_git=https://github.com/rstudio/bookdown-demo.git
+    - repo_git=https://gitlab-ci-token:$GITLAB_TOEKN@gitlab.com/dongzhuoer/docs.docker.com.git
+    - repo_branch=master
+    - work_dir=$TRAVIS_BUILD_DIR/..
+
+before_install: 
+  - echo 'before install'
+  - git clone --depth 1 $input_git $work_dir/input
+install:
+  - echo 'install software'
+before_script:  
+  - echo 'before build'
+  - mkdir $work_dir/output
+script:    
+  - echo 'build'
+  # deploy to remote Git
+  - git clone --depth 1 -b $repo_branch $repo_git $work_dir/repo && mv $work_dir/repo/.git $work_dir/output
+  - cd $work_dir/output && git add --all && git commit -m "travis build at `date '+%Y-%m-%d %H:%M:%S'`" --allow-empty && git push -f
+
+notifications:
+  email: false
+```
+
+- 这里我们 `mv repo/.git output` 来避免 `mv output/* repo` 中 `*` 不能匹配所有文件的问题。
+- use `https://$GITHUB_PAT@github.com` for GitHub repos
+
+
+
+## changlog
+
+- 12/22, fix the bug can't deploy to non-master branch (add `-b branch_name` to clone)
+

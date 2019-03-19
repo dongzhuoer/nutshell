@@ -1,0 +1,43 @@
+# docker
+
+
+
+
+## install docker 
+
+> Windows 10 need Pro version, so we only talk about Ubuntu here.
+
+DONOT follow the official guide ^[the network is awfully terrible], rather, directly download `.deb` ^[recently Docker has been splitted into three `.deb`, you needn't care the order, just use `gdebi` and install missing dependency] from <https://mirrors4.tuna.tsinghua.edu.cn/docker-ce/linux/ubuntu/dists/bionic/pool/stable/amd64/>
+
+
+then you need to add your acount into `docker` group
+
+```bash
+## you may need to relogin to let it effect
+sudo usermod -a -G docker $USER
+```
+
+
+
+## Dockerfile practice
+
+### empty image
+
+[scratch](https://hub.docker.com/_/scratch)
+
+### apt
+
+```bash
+RUN apt update && apt -y install wget && rm -r /var/lib/apt/lists/
+```
+
+if you install, use, then remove some packages, add `apt -y autoremove `
+
+### use environment variable for private information
+
+> first used for evading GitHub API limit in installing R packages
+
+in `Dockerfile`: `ARG GITHUB_PAT`
+
+then add `--build-arg GITHUB_PAT=${GITHUB_PAT` in `docker build` command
+

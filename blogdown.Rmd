@@ -1,0 +1,102 @@
+# blogdown 使用指南
+
+
+
+
+ironically, hugo markdown shortcode is rendered by Pandoc's rules in fact.
+
+
+`htmltools::HTML()` in `.Rmd` can escape text from pandoc and appear in `.html` verbatim
+hugo won't render `.html` input with markdown rules, but shortcode is supported.
+
+for cross reference `.Rmd` files, you must use `.html` file since that rather than `.Rmd` in input from hugo's view. Due to the existence of `.` in filename, you have to wrap filename by `""`, such as `` `r htmltools::HTML('&#123;{% ref "foo.html" %}}')` ``. But the `--smart` option of pandoc would ruin `""` (`\"` isn't useful since it would be convertd to `&quot;`).
+
+To conclude, there are three ways:
+
+1. `` `r htmltools::HTML('[text](hugo shortcode)')` ``, `<` is forbidden
+1. ``` ``r ''`r htmltools::HTML('[text](hugo shortcode)')` ```, both `%` and `<` is okay. you can write a helper function to construct the input of `htmltools::HTML()`.
+1. ``` [text](``r ''`r R_code`) ```, you can use `blogdown::shortcode()` or write your own function which returns `htmltools::HTML(...)`
+
+
+
+## Usage
+
+1. cross-reference
+
+```
+[link text](`r blogdown::shortcode('relref', 'relative/path/to/filename.html')`)
+```
+
+use `ref` (absolute path) would cause error
+
+1. update hugo-tranquilpeak-theme (submodule failed for netlify)
+
+```bash
+rm -rf themes/hugo-tranquilpeak-theme
+git clone --depth 1 git@github.com:kakawait/hugo-tranquilpeak-theme.git themes/hugo-tranquilpeak-theme
+rm -rf themes/hugo-tranquilpeak-theme/.git
+```
+
+1. Tips
+
+- after you rename a `.Rmd` file, remember to clean the old `.html` file (especially when you move `.Rmd`, otherwise there would be two post with same title and _slug_)
+
+
+
+
+
+
+## hugo
+
+- 测试 theme
+
+hugo 的 theme 都会自带 exampleSite，如果你想自己 build （比如修改 exampleSite 之后看看效果）：
+
+```
+cd theme-name/exampleSite
+hugo --themesDir ../../ -t theme-name
+```
+
+
+## tranquilpeak-theme
+
+[user doc](https://github.com/kakawait/hugo-tranquilpeak-theme/blob/master/docs/user.md)
+
+1. only files under `content/post/` directory is categoried ^[you may search `where .Data.Pages "Type" "post"`]
+
+1. [alert shortcode](https://github.com/kakawait/hugo-tranquilpeak-theme/blob/master/docs/user.md#alert)
+
+    info, success, warning, danger, no-icon
+
+
+1. tag and category must be vector (maybe an error)
+
+    error
+
+    ```yaml
+    tags: foobar
+    ```
+
+    right
+
+    ```yaml
+    tags: 
+    - foobar
+    ```
+
+1.  multiple category will be treated as hierarchy.
+
+    ```yaml
+    categories:
+        caprice
+
+    categories:
+    - tutorial
+    - down
+    ```
+
+    ```
+    caprice
+    tutorial
+    |---- down
+    ```

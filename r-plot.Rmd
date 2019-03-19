@@ -1,0 +1,657 @@
+# plot with R
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = T, error = T, cache = T)
+#, dpi = 144, fig.align = 'center', fig.show = 'asis', update.cache = T)
+```
+
+
+
+
+
+## multi-plot
+
+we use `cowplot::plot_grid()` as reference
+
+- for **gtable**, `rbind()` & `cbind()` just align plots, and you have to use `ggplotGrob()` to convert ggplot object, [example](https://cran.r-project.org/web/packages/egg/vignettes/Ecosystem.html#cb5)
+- for **egg**, `ggarrange()` doesn't provide more feature, but some figure explains how to align panels: [one](https://github.com/baptiste/egg#aligning-complex-ggplots) & [another](https://github.com/jwdink/egg#aligning-complex-ggplots) ^[there are two GitHub repo, the former releases to CRAN]
+- for **gridExtra**, `grid.arrange()` can't add label, and syntax for layout is more complex. But can add title, contain hole, nest and multi-page [vignette](https://cran.r-project.org/web/packages/gridExtra/vignettes/arrangeGrob.html)
+
+- **patchwork** provides a nice `+` syntax, but it remains to see whether I have to `library()` it, [home](https://github.com/thomasp85/patchwork)
+
+- **multipanelfigure** 's syntax is very different, but also very versatile, the author even use it to produce a supp figure of a biomedical paper [guide](file:///home/zhuoer/Downloads/v84c03.pdf)
+
+Thanks to this [vignette](https://cran.r-project.org/web/packages/egg/vignettes/Ecosystem.html), which contains many other useful tips:
+
+- Plot insets
+- share legend 
+- convert table to plot
+
+following are R code I write when reproducing that vignette
+
+```r
+gl <- lapply(1:4, function(ii) 
+    grid::grobTree(grid::rectGrob(gp=grid::gpar(fill=ii, alpha=0.5)), grid::textGrob(paste0('plot', ii)))) 
+
+grid.arrange(
+    grobs = gl,
+    widths = c(2, 1, 1),
+    layout_matrix = rbind(c(1, 2, NA),
+                          c(3, 3, 4))
+)
+
+p1 <- qplot(mpg, wt, data = mtcars, colour = cyl)
+p2 <- qplot(mpg, data = mtcars) + ggtitle("title")
+p3 <- qplot(mpg, data = mtcars, geom = "dotplot")
+p4 <-
+    p1 + facet_wrap( ~ carb, nrow = 1) + theme(legend.position = "none") +
+    ggtitle("facetted plot")
+grid.arrange(
+    p1, p2, p3, p4,
+    widths = c(1, 1, 1),
+    layout_matrix = rbind(c(1, 2, 3),
+                          c(4, 4, 4))
+)
+
+
+g <- ggplotGrob(qplot(1, 1) +
+                    theme(plot.background = element_rect(colour = "black")))
+qplot(1:10, 1:10) +
+    annotation_custom(
+        grob = g,
+        xmin = 1,
+        xmax = 5,
+        ymin = 5,
+        ymax = 10
+    ) +
+    annotation_custom(
+        grob = grid::rectGrob(gp = grid::gpar(fill = "white")),
+        xmin = 7.5,
+        xmax = Inf,
+        ymin = -Inf,
+        ymax = 5
+    )
+```
+
+
+## graphics
+
+```{r}
+library(nutshell)
+library(learningr)
+
+as_ggplot_list <- function(...) {
+    rlang::enexprs(...) %>% purrr::map(as.expression) %>% purrr::map(ggplotify::as.ggplot)
+}
+
+data(doctorates, batting.2008, turkey.price.ts, toxins.and.cancer, yosemite)
+bat = plyr::mutate(
+    batting.2008, 
+    PA = AB + BB + HBP + SF + SH,
+    OBP = (H + BB + HBP)/(AB + BB + HBP + SF)
+)
+bat.w.names <- plyr::mutate(
+    bat, 
+    throws = as.factor(throws), 
+    bats = as.factor(bats), 
+    AVG = H/AB
+)
+toc = toxins.and.cancer
+
+data(obama_vs_mccain, crab_tag)
+obama_vs_mccain = obama_vs_mccain[!is.na(obama_vs_mccain$Turnout), ]
+ovm = within(obama_vs_mccain, Region <- reorder(Region, Obama, median))
+```
+
+
+
+### univariate plot
+
+#### pie chart
+
+```{r fig.dim=c(6,4), out.extra='style="width:80%;display:block;margin:auto"'}
+c(
+    "Fresh and forzen" = 7752,
+    "Reduced to meal, etc." = 1166,
+    "Canned" = 463,
+    "Cured" = 108
+) %>% pie(main = "domestic catch 2006")
+```
+
+#### bar chart
+
+transform data.frame into a matrix for barplot
+
+```{r}
+doctorates.m <- as.matrix(doctorates[,-1])
+rownames(doctorates.m) <- doctorates[,1]
+doctorates.m
+```
+
+If the vector or matrix isn't named, you need to use `names.arg` to specify the labels.
+
+```{r}
+barplot(doctorates.m[1,])
+barplot(doctorates.m, beside = T, horiz = T, legend = T)
+## we set `ylim` to make room for the legend
+barplot(
+    t(doctorates.m), legend = T, ylim = c(0,66000), 
+    args.legend = list(ncol = 2)
+)
+```
+
+
+#### histogram
+
+
+```{r fig.dim=c(8,6)}
+as_ggplot_list(
+    hist(obama_vs_mccain$Obama, main = 'number'),
+    hist(obama_vs_mccain$Obama, freq = F, main = 'frequency')
+) %>% gridExtra::grid.arrange(grobs = ., nrow = 1)
+```
+
+how to specify binwidth (`breaks` parameter)
+
+```{r, fig.width=8, fig.height=9}
+seq_len_50 <- function(x) {seq(min(x), max(x), length.out = 50)}
+
+as_ggplot_list(
+    hist(obama_vs_mccain$Obama, 4, main = "An exact number of bins"),
+    hist(obama_vs_mccain$Obama, seq.int(0, 100, 5), main = "A vector of bin edges"),
+    hist(obama_vs_mccain$Obama, nclass.scott, main = "A function for the number of bins"),
+    hist(obama_vs_mccain$Obama, seq_len_50, main = "A function for the bin edges")
+) %>% gridExtra::grid.arrange(grobs = .)
+## you can also use the name of a method, such as `"FD"`
+```
+
+#### denstity plot
+
+```{r}
+plot(density(bat[bat$PA > 25,"PA"]))
+rug(bat[bat$PA > 25,"PA"])  #added to the above
+```
+
+#### quantile plot
+
+```{r}
+qqnorm(bat$AB)
+```
+
+#### time series plot
+
+`acf()` computes and plots the autocorrelation function for a time series:
+
+```{r out.width='50%', fig.show='hold'}
+as_ggplot_list(
+    plot(turkey.price.ts),
+    acf(turkey.price.ts)
+) %>% gridExtra::grid.arrange(grobs = ., nrow = 1)
+```
+
+
+### bivariate plot
+
+#### scatter plot
+
+```{r}
+as_ggplot_list(
+    plot(1:25, pch = 1:25, bg = "blue", main = 'plotting character, pch'),
+    plot(bat[,c("H","R","SO","BB","HR")], main = 'pairs of correlation')
+) %>% gridExtra::grid.arrange(grobs = ., nrow = 1, widths = c(1, 3))
+```
+
+```{r fig.width=10, fig.height=7.5}
+as_ggplot_list(
+    plot(obama_vs_mccain$Income, obama_vs_mccain$Turnout, col = "violet", pch = 20),
+    plot(obama_vs_mccain$Income, obama_vs_mccain$Turnout, log = "xy")
+) %>% gridExtra::grid.arrange(grobs = ., nrow = 1)
+```
+
+add text labels
+
+```{r}
+plot(
+    toc$air_on_site/toc$Surface_Area, toc$deaths_lung/toc$Population,
+    xlab = "Air Realse Rate of Toxic Chemicals", ylab = "Lung Cancer Death Rate"
+)
+text(
+    toc$air_on_site/toc$Surface_Area, toc$deaths_lung/toc$Population, 
+    cex = 0.5, labels = toc$State_Abbrev, adj = c(0, -1)
+)
+```
+
+#### line plot
+
+line plots are created in the same way as scatterplots, except that they take the argument **type = "l"**
+
+```{r fig.keep='all'}
+plot(crab_tag$daylog$Date, -crab_tag$daylog$Max.Depth, type = "l", ylim = c(-max(crab_tag$daylog$Max.Depth), 0))
+## use `lines()` to draw additional lines on an existing plot
+lines(crab_tag$daylog$Date, -crab_tag$daylog$Min.Depth, col = "blue")
+```
+
+#### box plot
+
+1. The box shows the interquartile range, which contains values between the 25th and 75th percentile;  
+2. The line inside the box shows the median;
+3. The two **whiskers** on either side of the box show the adjacent values, which are intended to show extreme values;  
+4. When there are values far outside the range we would expect for normally distributed data, those outlying values are plotted separately. 
+5. Specifically, here is how the adjacent values are calculated:  
+   - the upper adjacent value is the value of the largest observation that is less
+than or equal to the upper quartile plus 1.5 times the length of the interquartile
+range; 
+   - the lower adjacent value is the value of the smallest observation that is greater
+than or equal to the lower quartile less 1.5 times the length of the interquartile range.
+
+```{r fig.height=5, fig.width=10}
+as_ggplot_list(
+    boxplot(Obama ~ Region, data = obama_vs_mccain),
+    boxplot(Obama ~ Region, within(obama_vs_mccain, Region <- reorder(Region, Obama, median)))
+) %>% gridExtra::grid.arrange(grobs = ., nrow = 1)
+```
+
+#### plot categorical data
+
+```{r fig.height=10, fig.width=12}
+as_ggplot_list(
+    #conditional density of a set of categories dependent on a numeric value
+    cdplot(bats ~ AVG, bat.w.names, subset = (bat.w.names$AB > 100)),
+    spineplot(bats~throws, bat.w.names),
+    mosaicplot(bats~throws, bat.w.names, color = TRUE),
+    assocplot(table(bat.w.names$bats, bat.w.names$throws), xlab = "Throws", ylab = "Bats")
+) %>% gridExtra::grid.arrange(grobs = ., nrow = 2)
+```
+
+
+### trivariate plot
+
+we need to make two transformations:
+
+1. In the data file, values move east to west (or left to right) as x indices increase and from north to south (or top to bottom) as y indices increase. Unfortunately, **persp**  plots increasing y coordinates from bottom to top.  
+2. We need to select only a square subset of the elevation points.
+
+To plot the figure, we rotate the image by 225?? (through **theta=225**), change the viewing angle to 20?? (**phi=20**), adjuste the light source to be from a 45?? angle (**ltheta=45**) and set the shading factor to 0.75 (**shade=.75**) to exaggerate topological features.
+
+```{r}
+row = nrow(yosemite)
+col = ncol(yosemite)
+halfdome <- yosemite[(row - col + 1):row, col:1]
+```
+
+#### `persp()` and `headmap()`
+
+`persp()` draws a plot of a three-dimensional surface for a specific perspective.
+
+```{r fig.width=10, fig.height=5}
+as_ggplot_list(
+    persp(halfdome, col = grey(.25), border = NA, expand = .15, theta = 225, phi = 20, ltheta = 45, lphi = 20, shade = .75),
+    heatmap(yosemite)
+) %>% gridExtra::grid.arrange(grobs = ., nrow = 1)
+```
+
+
+#### `image()` and `contour()`
+
+`image()` plot a matrix of data points as a grid of boxes, color coding the boxes based on the intensity at each location.
+
+- `asp` specifies an aspect ratio that matches the dimensions of the data;  
+- `ylim` specifies that data is plotted from top to bottom
+
+
+```{r}
+image(yosemite, asp = col/row, col = sapply((0:32)/32, gray))
+contour(yosemite, asp = col/row, ylim = c(1,0))
+```
+
+
+Contours are commonly added to existing image plots:
+
+```{r}
+image(yosemite, asp = col/row, ylim = c(1,0), main = 'image + contour')
+contour(yosemite, asp = col/row, ylim = c(1,0), add = T)
+```
+
+
+
+
+
+### customizing charts
+
+#### graphical parameters
+
+get
+
+```{r}
+par("bg")
+head(par(),3)
+```
+
+set
+
+```{eval = F}
+par(bg = "transparent")
+```
+
+#### mutliple plots
+
+```{r fig.dim=c(6, 5)}
+par(mfcol = c(2,2))
+
+pie(5:1)
+plot(1:400,rnorm(400))
+qqnorm(rnorm(100))
+hist(rnorm(10000))
+```
+
+#### low-level graphics functions
+
+
+```{r fig.width=7, fig.height=5}
+## abline()
+plot(x = c(0,10),y = c(0,10), main = 'add lines')
+abline(h = 4.5, col = 'red')
+abline(v = 3.5, col = 'blue')
+abline(a = 1, b = 1, col = 'green')
+abline(coef  =  c(10,-1))
+abline(h = 1:10,v = 1:10, col = 'gray')
+
+## polygon()
+plot(x = c(0,10),y = c(0,10), main = 'add polygon')
+polygon(x = c(2,2,4,4),y = c(2,4,4,2))
+```
+
+
+
+## lattice
+
+```{r}
+library(lattice)
+library(nutshell)
+library(learningr)
+
+data(obama_vs_mccain, crab_tag)
+data(births2006.smpl, tires.sus, sanfrancisco.home.sales, team.batting.00to08)
+
+births = births2006.smpl
+san = sanfrancisco.home.sales
+obama_vs_mccain = obama_vs_mccain[!is.na(obama_vs_mccain$Turnout), ]
+ovm = within(obama_vs_mccain, Region <- reorder(Region, Obama, median))
+ovm2 <- ovm[!(ovm$State %in% c("Alaska", "Hawaii")), ]
+```
+
+### introduction
+
+#### how lattice works
+
+1. The end user calls a high-level lattice plotting function.
+2. The **lattice** function examines the calling arguments and default parameters, assembles a lattice object, and returns the object. (Note that the class of the object is actually **trellis**.)
+3. The user calls **plot.trellis** or **plot.trellis** with the lattice object as an argument. (This typically happens automatically on the R console.)
+4. The function **plot.trellis** sets up the matrix of panels, assigns packets to different panels and then calls the panel function specified in the lattice object to draw the individual panels.
+
+#### a simple example
+
+```{r fig.dim=c(4, 2.5)}
+(d <- data.frame(x = c(0:9), y = c(1:10), z = c(rep(c("a", "b"), times = 5))))
+
+xyplot(y~x, data = d)
+xyplot(y~x, groups = z, data = d)
+xyplot(y~x | z, data = d)
+xyplot(
+    y~x | z, data = d, 
+    panel = function(...){
+        panel.abline(a = 1,b = 1)
+        panel.xyplot(...)
+    }
+)
+```
+
+
+### store lattice plots and update
+
+```{r}
+(lat1 <- xyplot(Turnout ~ Income | Region,obama_vs_mccain))
+(lat2 <- update(lat1, col = "violet", pch = 20))
+```
+
+### univariate plot
+
+#### bar chart
+
+- one-dimentional table
+
+```{r}
+(births.dow <- table(births$DOB_WK))
+
+barchart(births.dow)
+```
+
+- two-dimensional table
+
+```{r}
+births2006.dm <- plyr::mutate(births[births$DMETH_REC != "Unknown",],
+                              DMETH_REC = as.factor(as.character(DMETH_REC)))
+(dob.dm.tbl <- with(births2006.dm, table(WK = DOB_WK,MM = DMETH_REC)))
+
+barchart(dob.dm.tbl)
+barchart(dob.dm.tbl, stack = F, auto.key = T)
+barchart(dob.dm.tbl, horizontal = F, groups = F)
+```
+
+
+- data frame
+
+```{r}
+ovm2 %>% tibble::as_tibble()
+
+barchart(State ~ Catholic, ovm2)
+barchart(State ~ Catholic + Protestant + Non.religious + Other, ovm2, stack = T)
+```
+
+
+#### dot plot
+
+- three-dimensional table
+
+```{r}
+(dob.dm.tbl.alt <- with(births2006.dm, table(week = DOB_WK, month = DOB_MM, meths = DMETH_REC)))
+
+dotplot(dob.dm.tbl.alt, groups = T, auto.key = T, stack = F)
+```
+
+- data frame
+
+```{r}
+tires.sus$Speed_At_Failure_km_h %>% tibble::as_tibble()
+
+dotplot(as.factor(Speed_At_Failure_km_h) ~ Time_To_Failure | Tire_Type, tires.sus)
+```
+
+#### histogram
+
+```{r}
+histogram(~ Obama, obama_vs_mccain)    
+histogram(~ Obama, obama_vs_mccain, breaks = 10)
+histogram(~ Obama, obama_vs_mccain, type = "percent")
+histogram(~ Obama, obama_vs_mccain, type = "count")
+histogram(~ Obama, obama_vs_mccain, type = "density")
+histogram(~DBWT | DPLURAL, births)
+histogram(~DBWT | DPLURAL, births, layout = c(1,5))
+```
+
+#### denstity plot
+
+```{r}
+(plur = unique(as.character(births$DPLURAL))[4:5]) #quadruplet or higher
+
+#By default, densityplot will draw a strip chart under each chart:
+densityplot(~DBWT | DPLURAL, births, subset = (DPLURAL %in% plur))
+#turn off the strip by plot.points = F because the data set is so big
+densityplot(~DBWT | DPLURAL, births, layout = c(1,5), plot.points = F)
+densityplot(~DBWT, groups = DPLURAL, births, plot.points = F, auto.key = T)
+```
+
+#### strip plot
+
+You can think of strip plots as one-dimensional scatter plots:
+
+```{r}
+#jitter.data=T adds some random vertical noise to make the points easier to read
+stripplot(~DBWT, births, jitter.data = T, subset = (DPLURAL %in% plur))
+```
+
+#### quantile plot
+
+```{r}
+qqmath(rnorm(100000))
+qqmath(~DBWT | DPLURAL, births, pch = 19, cex = .25)
+qqmath(~price, san)
+qqmath(~log(price), san)
+qqmath(~log(price), groups = bedrooms, auto.key = T, type = "smooth",
+       subset(san, !is.na(bedrooms) & bedrooms > 0 & bedrooms < 7))
+#using subset parameter causes unused factor levels: 
+qqmath(~log(price), groups = bedrooms, san, auto.key = T, type = "smooth",
+       subset = !is.na(bedrooms) & bedrooms > 0 & bedrooms < 7)
+#we use subset parameter because NA is cleaned up:
+qqmath(~log(price), groups = Hmisc::cut2(squarefeet, g = 6), san,
+       subset = !is.na(squarefeet), type = "smooth", auto.key = T)
+```
+
+
+### bivariate plot
+
+#### scatter plot
+
+```{r}
+xyplot(Turnout ~ Income, obama_vs_mccain, col = "violet", pch = 20)
+## use `list(log = TRUE)` to log-scale both axes
+xyplot(Turnout ~ Income, obama_vs_mccain, scales = list(y = list(log = TRUE))) 
+#relation = "same" means that each panel shares the same axes.
+#alternating = T(default) means axis ticks for each panel are drawn on alternating sides of the plot, otherwise just the left and bottom 
+xyplot(Turnout ~ Income | Region, obama_vs_mccain, layout = c(5, 2),
+       scales = list(log = T, relation = "same", alternating = F))
+```
+
+
+```{r}
+dollars.per.squarefoot <- with(san, mean(price / squarefeet, na.rm = T))
+zips = subset(san, !is.na(squarefeet), zip) %>% table() %>% sort() %>% head(4*5) %>% names() %>% as.integer()
+san.subset <- subset(san, zip %in% zips & price < 4000000 & squarefeet < 6000)
+
+trellis.par.set(fontsize = list(text = 7))
+xyplot(price~squarefeet | neighborhood, san.subset, pch = 19, cex = .2,
+       strip = strip.custom(strip.levels = T, horizontal = T,
+                            par.strip.text = list(cex = .8)),
+       panel = function(...) {
+           panel.abline(a = 0, b = dollars.per.squarefoot)
+           panel.xyplot(...)
+        }
+)
+```
+
+### line plot
+
+```{r}
+xyplot(-Min.Depth + -Max.Depth ~ Date, crab_tag$daylog, type = "l")
+```
+
+### box plot
+
+"bw" is short for "b (box) and w (whisker)",
+
+```{r}
+table(cut(san$date,"month"))
+
+bwplot(log(price) ~ cut(date,"month"), san, scales = list(x = list(rot = 90)))
+```
+
+
+### trivariate plot
+
+```{r}
+levelplot(price~latitude + longitude, san)
+levelplot(with(san, table(cut(longitude,40), cut(latitude,40))),
+          scales = list(x = list(rot = 90, cex = .5), y = list(cex = .5)))
+levelplot(
+    with(san, tapply(price,list(cut(longitude, 40), cut(latitude, 40)), mean)),
+    scales = list(draw = F))
+levelplot(with(san, table(cut(longitude, 25),
+                          cut(latitude, 25),
+                          ifelse(bedrooms < 5, bedrooms, 5))),
+          scales = list(draw = F))
+```
+
+- `lattice::contourplot()`
+- `lattice::cloud()`
+- `lattice::wireframe()`
+
+
+### other plot
+
+#### residual and fit-spread (RFS) plot
+```{r}
+model = lm(runs~singles + doubles + triples + stolenbases + homeruns + walks 
+           + hitbypitch + sacrificeflies + caughtstealing, team.batting.00to08)
+
+rfs(model)
+rfs(model,distribution  =  qnorm)
+```
+
+
+### lattice parameters
+
+#### get
+```{r}
+trellis.par.get("clip")
+
+head(trellis.par.get(), 3)
+```
+
+#### set
+```{r}
+trellis.par.set(list(axis.text = list(cex = .5)))
+```
+
+#### nicer show
+
+```{r}
+show.settings()
+```
+
+#### deep diving
+
+There are a total of 378 parameters. However, there are only 46 unique parameters within these groups:
+```{r}
+length(unlist(trellis.par.get()))
+
+(function() {
+    n = names(trellis.par.get())
+    p = NA
+    for (i in 1:34) p = c(p,names(trellis.par.get(n[i])))
+    length(table(p))
+})()
+```
+
+## ggplot2
+
+- `labs(x = NULL)` can suppress x axis label
+
+- color
+
+```{r color}
+scales::show_col(scales::hue_pal()(4))
+```
+
+
+- legend
+
+```{r}
+library(ggplot2)
+ggplot(mtcars, aes(wt, mpg)) +
+    geom_point(aes(colour = factor(cyl), shape = factor(vs))) +
+    labs(x = "Weight (1000 lbs)", y = "Fuel economy (mpg)", colour = "Cylinders", shape = "Transmission") + 
+    theme(legend.background = element_rect(colour = 'purple', fill = 'pink', size = 3, linetype='dashed'), 
+		  legend.margin = margin(20,15,10,5), 
+		  legend.box.background = element_rect(colour = 'blue', fill = 'yellow', size = 5, linetype='solid'), 
+		  legend.box.margin = margin(10,20,30,40))
+```

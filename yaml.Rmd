@@ -1,0 +1,115 @@
+# yaml
+
+
+
+This post mainly covers [yaml in R](https://github.com/viking/r-yaml), see [中文教程](http://www.ruanyifeng.com/blog/2016/07/yaml.html) for more information.
+
+
+## yes or no, that is a question
+
+```yaml
+yes: yes
+no: no
+```
+
+means
+
+```{r echo=FALSE, comment=NA}
+yaml::yaml.load('yes: yes\nno: no')
+```
+
+You should add quotes to avoid being interpreted as `T` or `F`
+
+```yaml
+'yes': yes
+'no': 'no'
+```
+
+means
+
+```{r echo=FALSE, comment=NA}
+yaml::yaml.load('"yes": yes\n"no": "no"')
+```
+
+There's actually a [long list of reserved words](http://yaml.org/type/bool.html) with this behavior:
+
+```
+y|Y|yes|Yes|YES|n|N|no|No|NO
+|true|True|TRUE|false|False|FALSE
+|on|On|ON|off|Off|OFF
+```
+
+Wa, the world is so nice!
+
+
+
+## vector
+
+There are two ways to represent vectors:
+
+```yaml
+rmd_files: ["index.Rmd", "body.Rmd"]
+```
+
+```yaml
+rmd_files:
+  - "index.Rmd"
+  - "body.Rmd"
+```
+
+the following ways is also okay, but not recommended (at least by me)
+
+```yaml
+rmd_files: [
+  "index.Rmd", 
+  "body.Rmd"
+]
+```
+
+or even
+
+```yaml
+rmd_files: [
+  "index.Rmd", 
+  "body.Rmd",
+]
+```
+
+
+
+## list
+
+缩进的空格数目不重要，只要相同层级的元素左侧对齐即可
+
+Values can also be lists of values. You just need to indent the values by two more spaces, e.g.,
+
+```yaml
+output:
+  bookdown::gitbook:
+    split_by: "section"
+    split_bib: no
+```
+
+It is a common mistake to forget to indent the values. For example, the following data
+
+```yaml
+output:
+html_document:
+toc: yes
+```
+
+actually means
+
+```yaml
+output: null
+html_document: null
+toc: yes
+```
+
+instead of what you probably would have expected:
+
+```yaml
+output:
+  html_document:
+    toc: yes
+```

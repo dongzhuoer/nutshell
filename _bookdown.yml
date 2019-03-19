@@ -3,6 +3,20 @@ output_dir: gitbook
 delete_merged_file: yes
 new_session: yes
 edit: https://github.com/dongzhuoer/nutshell/edit/master/%s
-# rmd_files:
-#   - index.Rmd
-#   - r.Rmd
+rmd_files:
+  - index.Rmd
+  - r.Rmd
+  - tidyverse.Rmd
+  - r-plot.Rmd
+  - rmarkdown.Rmd
+  - bookdown.Rmd
+  - blogdown.Rmd
+  - r-packages.Rmd
+  - rcpp.Rmd
+  - yaml.Rmd
+  - linux-management.Rmd
+  - git.Rmd
+  - docker.Rmd
+  - travis.Rmd
+  - vscode.Rmd
+

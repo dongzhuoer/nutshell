@@ -1,0 +1,48 @@
+# (PART) Linux {-}
+
+# Linux system management
+
+
+
+## package management
+
+### apt & dpkg
+
+#### list files
+
+```
+dpkg -L package         # an installed package, use `dpkg-query -L`
+dpkg -c package-file    # a deb file,           use `dpkg-deb -c`
+apt-file list -F pakage # an online package,    `-F` means `--fixed-string`
+```
+
+#### details
+
+
+1. remove and reinstall would preserve some configuration file, such as `/etc/haproxy/haproxy.cfg`, you can consider `apt purge`
+
+#### deal with an urgent error
+
+```bash
+sudo dpkg --remove --force-all package
+sudo apt upgrade -yf
+```
+
+### yum & rpm 
+
+#### epel
+
+the simplest way is `yum -y install epel-release`
+
+you can also try to edit `/etc/yum.repos.d/epel.repo`
+
+```
+[epel]
+name = epel packages
+baseurl = https://mirrors.tuna.tsinghua.edu.cn/epel/7/x86_64/
+gpgcheck = 0
+enabled = 1
+```
+
+when you meet xz compression error: `sudo rm -rf /var/cache/yum/x86_64/6/epel/ # `
+

@@ -1,0 +1,198 @@
+
+
+# VSCode: the baset GUI code editor {# VScode}
+
+## extensions
+
+see install-Ubuntu
+
+## fonts
+
+I spend a hard time selecting a good font for code. Some character, like 直, are too ugly.
+
+Finally, [`mplus-1m-regular.ttf`](https://github.com/rayshan/mplus-fonts) succeed, while [Inconsolata](https://github.com/googlefonts/Inconsolata) is also pretty good.
+
+
+## tips
+
+sudo apt -y install nodejs npm libx11-dev libxkbfile-dev libsecret-1-dev fakeroot rpm
+
+- code
+
+ `workbench.action.termielectedText` 没有选中文本时运行整行
+
+  ${env:PATH} issupported in build task but not in setting yet  https://github.com/Microsoft/vscode/issues/2809
+
+
+
+
+- extension
+
+    - path auto completion
+    **Path Autocomplete** can use `./`, `~/`, `c:/`
+    **Path Intellisense** can use `/` by setting `"path-intellisense.absolutePathToWorkspace": false`
+    but both can only be used in ``` `` ``` or `''`, i.e., `vim /etc/***` is impossible
+
+    - VSCode Great Icons 已弃用，不按我的要求加 `.Rproj` 的 icon，丑死了，
+
+先记一下，以后再整理。
+
+(to do)是可能要改的
+
+
+## Ctrl
+
+那就先列举一下 ctrl 系的吧
+
+|                    |                      |              |                |                      |                  |                     |
+| ------------------ | -------------------- | ------------ | -------------- | -------------------- | ---------------- | ------------------- |
+| `1` Split[^0]      | `2`  Select[^c-2]    | `3` Select   | `4` free       | `5` free             | `6` free         | `7` free            |
+| `q` Select         | `w` **Wi**ndow[^c-w] | `e` Select   | `r` **R**ecent | `t` **T**est    | `y` Redo         | `u` **U**ndo [^c-u] |
+| `a` choose **A**ll | `s` **S**ave         | `d` Select   | `f` **F**ind   | `g`  Go[^c-g]        | `h` Replace      | `j` Panel           |
+| `z` Undo           | `x` Cut              | `c` **C**opy | `v` Paste      | `b`  **B**uild[^c-b] | `n` **N**ew file | `m` VSCode          |
+ 
+  : Shortcut with `ctrl`
+
+`ctrl+c/v/x` on act on line when you haven't selected anything
+
+`` ctrl+` `` intergrated ternimal  
+
+| shortcut     | action                      |
+| ------------ | --------------------------- |
+| `` ctrl+` `` | Toggle intergrated ternimal |
+| `ctrl+j`     | Join line                   |
+| `ctrl+l`     | Select line                 |
+| `ctrl+o`     | Open file                   |
+
+
+## ctrl+shift
+
+|                       |                        |                 |                            |                        |                      |
+| --------------------- | ---------------------- | --------------- | -------------------------- | ---------------------- | -------------------- |
+| `1` Layout            | `2`   Select           | `3` Select      | `4` free                   | `5` free               | `6` free             |
+| `q` Select            | `w` **W**hole [^c-s-w] | `e` Select      | `r` **R** terminal         | `t` VSCode             | `y` VSCode           |
+| `a` **A**ll Occurence | `s` **S**ave all       | `d` Select      | `f` **F**ormat all[^c-s-f] | `g` **G**o line        | `h` Preview **h**tml |
+| `z` Zen               | `x` VSCode[^c-s-x]     | `c` **C**omment | `v` **V**iew[^c-s-v]       | `b`  comment **B**lock | `n` **N**ew[^c-s-n]  |
+  : Shortcut with `ctrl+shift`
+
+
+
+Relative path of files in current workspace
+`x` is mnemonic for e**x**tension
+
+| shortcut           | action                           |
+| ------------------ | :------------------------------: |
+| `` ctrl+shift+` `` | create new  intergrated ternimal |
+| `ctrl+shift+[`     | fold                             |
+| `ctrl+shift+]`     | unfold                           |
+
+
+原来的 EditorGroup 就有 `alt+1/2/3` 充当。 顺手把 `alt+4/6` 用来 Delete to line end/begin (4 is $, 6 is 
+^) ( but it seems thath I didn't use it too much, so maybe I will remove it in furture )
+
+## alt
+
+既然到了`alt`，就来数数
+
+|             |                   |                   |                     |                  |            |            |
+| ----------- | ----------------- | ----------------- | ------------------- | ---------------- | ---------- | ---------- |
+| `1` Group 1 | `2` Group 2       | `3` Group 3       | `4` VSCode          | `5` VSCode       | `6` VSCode | `7` VSCode |
+| `q` free    | `w` find **W**ord | `e` Menu          | `r` find **R**egexr | `t` Menu         | `y` free   | `u` VSCode |
+| `a` free    | `s` Menu          | `d` Menu          | `f` Menu            | `g` Menu         | `h` Menu   | `j` Panel  |
+| `z` Wrap    | `x` free          | `c` find **C**ase | `v` Menu            | `b` side **B**ar | `n` free   | `m` free   |
+ 
+  : Shortcut with `alt`
+
+
+
+| shortcut | action                   |
+| -------- | :----------------------: |
+| `l`      | change **l**anguage mode |
+
+
+
+| shortcut | action                   |
+| -------- | ------------------------ |
+| `s`      | User setting             |
+| `f`      | **F**ormat selected code |
+| `[`      | fold all                 |
+| `]`      | unfold all               |
+  : `alt+shift`   
+
+方向键单独讨论一下
+
+f3/enter next match (enter need findwidget focused)
+
+
+
+  "shift+end",           "cursorEndSelect",
+  "shift+home",            "cursorHomeSelect",
+         `ctrl+shift+home/end` | select top/bottom                            
+
+## 其他 shortcut
+
+
+| shortcut         | action            |
+| ---------------- | ----------------- |
+| `F1`             | Command palette   |
+| `shift+Alt+drag` | column selection: |
+
+
+  : title
+
+| shortcut   | action                          |
+| ---------- | ------------------------------- |
+| `ctrl+k m` | VSCode builtin markdown preview |
+
+  : 不用
+
+
+
+
+| shortcut | action |
+| -------- | ------ |
+| `key`    | task   |
+  : 以后可能会加上的
+
+
+## 接着讲怎么记 Quick and Simple Text Selection
+
+- **Q**uote
+- `3` `e` `D` 排成一列，代表 `()` `[]` `{}` 的层级顺序 （目前 `{}` 最常用就放得最近）
+- `shift` for outer ( AngleBrackets is similar to the outer of a tag)
+
+| shortcut       | action                              |
+| -------------- | ----------------------------------- |
+| `ctrl+q`       | extension.selectEitherQuote         |
+| `alt+q`        | extension.switchQuotes              |
+| `ctrl+shift+q` | extension.selectBackTick            |
+| `ctrl+shift+3` | extension.selectParenthesis         |
+| `ctrl+3`       | extension.selectParenthesisOuter    |
+| `ctrl+e`       | extension.selectSquareBrackets      |
+| `ctrl+shift+e` | extension.selectSquareBracketsOuter |
+| `ctrl+d`       | extension.selectCurlyBrackets       |
+| `ctrl+shift+d` | extension.selectCurlyBracketsOuter  |
+| `ctrl+2`       | extension.selectInTag               |
+| `ctrl+shift+2` | extension.selectAngleBrackets       |
+
+  : Quick and Simple Text Selection 
+
+
+
+
+## footnote
+
+[^0]: 都占满之后，剩下的 `ctrl+1` 就留给 Split editor 了, 顺手把 `ctrl+shift+1` 用来 Toggle editor group Layout
+[^c-2]: Quick and Simple Text Selection
+[^c-w]: Close editor or windows
+[^c-u]: Undo changing cursor position
+[^c-b]: conflict **B**old.
+[^c-s-w]: It may choose a _whole_ thingword, maybe a world, string or even `foo.bar`.  
+[^c-s-f]: **F**ind in files when you can't format document.  
+[^c-g]: Quick open, Press `right` to open a file in the background. Except opening files, you to can do many many things with the top palette (just type `?` as suggested).
+[^c-s-x]: View e**x**tensions, but I don't use it often, reserved for furture use.
+[^c-s-v]: Enhanced preview (R) Markdown
+[^c-s-n]: New Window
+
+
+

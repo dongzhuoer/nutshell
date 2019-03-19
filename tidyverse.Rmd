@@ -1,5 +1,10 @@
 # tidyverse packages notes
 
+```{r knitr-setup, include=FALSE}
+knitr::opts_chunk$set(collapse = T, error = T, cache = T)
+#, dpi = 144, fig.align = 'center', fig.show = 'asis', update.cache = T)
+```
+
 ```{r setup, message=FALSE}
 library(tidyverse)
 ```

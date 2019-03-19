@@ -1,11 +1,24 @@
 --- 
 title: "Programming in a nutshell"
+description: "编程路上摸爬滚打的总结"
 author: "Zhuoer Dong"
 date: "`r Sys.Date()`"
 knit: "bookdown::render_book"
 site: bookdown::bookdown_site
+github-repo: dongzhuoer/nutshell
+monofont: "Source Code Pro"
 output: 
-    bookdown::gitbook
+    bookdown::gitbook:
+        highlight: haddock
+        css: bookdown.css
+        config:
+            download: no
+            sharing:
+                github: yes
+                facebook: no
+                twitter: no
+            fontsettings:
+                theme: sepia
 ---
 
 # preface {-}

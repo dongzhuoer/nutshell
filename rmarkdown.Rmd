@@ -1,11 +1,6 @@
 # R Markdown
 
 
-## good example
-
-- `06.junior spring/科研训练Ⅰ`: source `.Rmd`, output `.html`, code for generating figures of a research project
-- `research/xparis`: multiple output format for different usage
-- `07.senior autumn/生物科学综合实验`: 生成 Word 版论文，这里还是事后进行修改，提供模板会好很多
 
 
 
@@ -23,7 +18,19 @@ mean(1:5)
 
 
 
+
+
 ## reproducible 
+
+
+
+### good example
+
+- `06.junior spring/科研训练Ⅰ`: source `.Rmd`, output `.html`, code for generating figures of a research project
+- `research/xparis`: multiple output format for different usage
+- `07.senior autumn/生物科学综合实验`: 生成 Word 版论文，这里还是事后进行修改，提供模板会好很多
+
+
 
 ### Date
 
@@ -66,7 +73,9 @@ if (length(github_pkg) > 0) remotes::install_github(github_pkg)
 ```
 ````
 
-### VSCode
+
+
+### VSCode Tasks
 
 `.vscode/tasks.json`
 ```json
@@ -95,12 +104,24 @@ if (length(github_pkg) > 0) remotes::install_github(github_pkg)
 }
 ```
 
+
+
 ### other
 
-这里还加了创建用到的文件夹（避免 `read_rds()` 等报错）
+- make sure directory exist
 
 ```r
 'dir-name' %>% {if (!dir.exists(.)) dir.create(.)}
+```
+
+
+### Portable code
+
+- change default package in `.Rprofile`
+to be portable,  should not cause error
+
+```r
+if ('pkg' %in% .packages(T)) options('defaultPackages' = unique(c(getOption('defaultPackages'), 'pkg')))
 ```
 
 

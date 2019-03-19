@@ -1,9 +1,53 @@
+```{r include=FALSE, cache=FALSE}
+# adapted from https://github.com/hadley/r4ds/blob/master/_common.R
+
+set.seed(1014)
+options(digits = 3)
+
+knitr::opts_chunk$set(
+  comment = "#>",
+  collapse = TRUE,
+  error = TRUE,
+  cache = TRUE,
+  fig.align = 'center',
+  fig.width = 6,
+  fig.asp = 0.618,  # 1 / phi
+  out.width = "70%"
+)
+
+options(dplyr.print_max = 10)
+
+```
 # plot with R
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(collapse = T, error = T, cache = T)
-#, dpi = 144, fig.align = 'center', fig.show = 'asis', update.cache = T)
+
+
+
+
+
+## ggplot2
+
+- `labs(x = NULL)` can suppress x axis label
+
+- color
+
+```{r color}
+scales::show_col(scales::hue_pal()(4))
 ```
+
+- legend
+
+```{r}
+library(ggplot2)
+ggplot(mtcars, aes(wt, mpg)) +
+    geom_point(aes(colour = factor(cyl), shape = factor(vs))) +
+    labs(x = "Weight (1000 lbs)", y = "Fuel economy (mpg)", colour = "Cylinders", shape = "Transmission") + 
+    theme(legend.background = element_rect(colour = 'purple', fill = 'pink', size = 3, linetype='dashed'), 
+		  legend.margin = margin(20,15,10,5), 
+		  legend.box.background = element_rect(colour = 'blue', fill = 'yellow', size = 5, linetype='solid'), 
+		  legend.box.margin = margin(10,20,30,40))
+```
+
 
 
 
@@ -74,6 +118,10 @@ qplot(1:10, 1:10) +
 ```
 
 
+
+
+
+
 ## graphics
 
 ```{r}
@@ -109,7 +157,7 @@ ovm = within(obama_vs_mccain, Region <- reorder(Region, Obama, median))
 
 #### pie chart
 
-```{r fig.dim=c(6,4), out.extra='style="width:80%;display:block;margin:auto"'}
+```{r fig.dim=c(6,4)}
 c(
     "Fresh and forzen" = 7752,
     "Reduced to meal, etc." = 1166,
@@ -130,7 +178,7 @@ doctorates.m
 
 If the vector or matrix isn't named, you need to use `names.arg` to specify the labels.
 
-```{r}
+```{r fig.asp=0.75}
 barplot(doctorates.m[1,])
 barplot(doctorates.m, beside = T, horiz = T, legend = T)
 ## we set `ylim` to make room for the legend
@@ -140,9 +188,7 @@ barplot(
 )
 ```
 
-
 #### histogram
-
 
 ```{r fig.dim=c(8,6)}
 as_ggplot_list(
@@ -153,16 +199,12 @@ as_ggplot_list(
 
 how to specify binwidth (`breaks` parameter)
 
-```{r, fig.width=8, fig.height=9}
-seq_len_50 <- function(x) {seq(min(x), max(x), length.out = 50)}
-
-as_ggplot_list(
-    hist(obama_vs_mccain$Obama, 4, main = "An exact number of bins"),
-    hist(obama_vs_mccain$Obama, seq.int(0, 100, 5), main = "A vector of bin edges"),
-    hist(obama_vs_mccain$Obama, nclass.scott, main = "A function for the number of bins"),
-    hist(obama_vs_mccain$Obama, seq_len_50, main = "A function for the bin edges")
-) %>% gridExtra::grid.arrange(grobs = .)
-## you can also use the name of a method, such as `"FD"`
+```{r}
+hist(obama_vs_mccain$Obama, 4, main = "An exact number of bins")
+hist(obama_vs_mccain$Obama, seq.int(0, 100, 5), main = "A vector of bin edges")
+hist(obama_vs_mccain$Obama, nclass.scott, main = "A function for the number of bins")
+# you can also use the name of a method, such as `"FD"`
+hist(obama_vs_mccain$Obama, function(x) {seq(min(x), max(x), length.out = 50)}, main = "A function for the bin edges")
 ```
 
 #### denstity plot
@@ -182,7 +224,7 @@ qqnorm(bat$AB)
 
 `acf()` computes and plots the autocorrelation function for a time series:
 
-```{r out.width='50%', fig.show='hold'}
+```{r fig.asp=0.8, out.width='50%'}
 as_ggplot_list(
     plot(turkey.price.ts),
     acf(turkey.price.ts)
@@ -190,27 +232,28 @@ as_ggplot_list(
 ```
 
 
+
 ### bivariate plot
 
 #### scatter plot
 
-```{r}
-as_ggplot_list(
-    plot(1:25, pch = 1:25, bg = "blue", main = 'plotting character, pch'),
-    plot(bat[,c("H","R","SO","BB","HR")], main = 'pairs of correlation')
-) %>% gridExtra::grid.arrange(grobs = ., nrow = 1, widths = c(1, 3))
-```
-
-```{r fig.width=10, fig.height=7.5}
+```{r fig.width=8}
 as_ggplot_list(
     plot(obama_vs_mccain$Income, obama_vs_mccain$Turnout, col = "violet", pch = 20),
     plot(obama_vs_mccain$Income, obama_vs_mccain$Turnout, log = "xy")
 ) %>% gridExtra::grid.arrange(grobs = ., nrow = 1)
 ```
 
+pairs of correlation
+
+```{r fig.width=9}
+plot(bat[,c("H","R","SO","BB","HR")], main = '')
+```
+
+
 add text labels
 
-```{r}
+```{r fig.width=8}
 plot(
     toc$air_on_site/toc$Surface_Area, toc$deaths_lung/toc$Population,
     xlab = "Air Realse Rate of Toxic Chemicals", ylab = "Lung Cancer Death Rate"
@@ -220,6 +263,13 @@ text(
     cex = 0.5, labels = toc$State_Abbrev, adj = c(0, -1)
 )
 ```
+
+point shape is specified by `pch` (plotting character)
+
+```{r}
+plot(1:25, pch = 1:25, bg = "blue")
+```
+
 
 #### line plot
 
@@ -244,7 +294,7 @@ range;
    - the lower adjacent value is the value of the smallest observation that is greater
 than or equal to the lower quartile less 1.5 times the length of the interquartile range.
 
-```{r fig.height=5, fig.width=10}
+```{r fig.width=10}
 as_ggplot_list(
     boxplot(Obama ~ Region, data = obama_vs_mccain),
     boxplot(Obama ~ Region, within(obama_vs_mccain, Region <- reorder(Region, Obama, median)))
@@ -253,15 +303,14 @@ as_ggplot_list(
 
 #### plot categorical data
 
-```{r fig.height=10, fig.width=12}
-as_ggplot_list(
-    #conditional density of a set of categories dependent on a numeric value
-    cdplot(bats ~ AVG, bat.w.names, subset = (bat.w.names$AB > 100)),
-    spineplot(bats~throws, bat.w.names),
-    mosaicplot(bats~throws, bat.w.names, color = TRUE),
-    assocplot(table(bat.w.names$bats, bat.w.names$throws), xlab = "Throws", ylab = "Bats")
-) %>% gridExtra::grid.arrange(grobs = ., nrow = 2)
+```{r}
+# conditional density of a set of categories dependent on a numeric value
+cdplot(bats ~ AVG, bat.w.names, subset = (bat.w.names$AB > 100))
+spineplot(bats~throws, bat.w.names)
+mosaicplot(bats~throws, bat.w.names, color = TRUE)
+assocplot(table(bat.w.names$bats, bat.w.names$throws), xlab = "Throws", ylab = "Bats")
 ```
+
 
 
 ### trivariate plot
@@ -281,15 +330,16 @@ halfdome <- yosemite[(row - col + 1):row, col:1]
 
 #### `persp()` and `headmap()`
 
-`persp()` draws a plot of a three-dimensional surface for a specific perspective.
 
-```{r fig.width=10, fig.height=5}
-as_ggplot_list(
-    persp(halfdome, col = grey(.25), border = NA, expand = .15, theta = 225, phi = 20, ltheta = 45, lphi = 20, shade = .75),
-    heatmap(yosemite)
-) %>% gridExtra::grid.arrange(grobs = ., nrow = 1)
+
+```{r}
+# three-dimensional surface for a specific perspective.
+persp(halfdome, col = grey(.25), border = NA, expand = .15, theta = 225, phi = 20, ltheta = 45, lphi = 20, shade = .75)
 ```
 
+```{r}
+heatmap(yosemite)
+```
 
 #### `image()` and `contour()`
 
@@ -298,12 +348,10 @@ as_ggplot_list(
 - `asp` specifies an aspect ratio that matches the dimensions of the data;  
 - `ylim` specifies that data is plotted from top to bottom
 
-
 ```{r}
 image(yosemite, asp = col/row, col = sapply((0:32)/32, gray))
 contour(yosemite, asp = col/row, ylim = c(1,0))
 ```
-
 
 Contours are commonly added to existing image plots:
 
@@ -314,20 +362,18 @@ contour(yosemite, asp = col/row, ylim = c(1,0), add = T)
 
 
 
-
-
 ### customizing charts
 
 #### graphical parameters
 
-get
+- get
 
 ```{r}
 par("bg")
 head(par(),3)
 ```
 
-set
+- set
 
 ```{eval = F}
 par(bg = "transparent")
@@ -346,20 +392,26 @@ hist(rnorm(10000))
 
 #### low-level graphics functions
 
+- `abline()`
 
-```{r fig.width=7, fig.height=5}
-## abline()
+```{r}
 plot(x = c(0,10),y = c(0,10), main = 'add lines')
 abline(h = 4.5, col = 'red')
 abline(v = 3.5, col = 'blue')
 abline(a = 1, b = 1, col = 'green')
 abline(coef  =  c(10,-1))
 abline(h = 1:10,v = 1:10, col = 'gray')
+```
 
-## polygon()
+- `polygon()`
+
+```{r}
 plot(x = c(0,10),y = c(0,10), main = 'add polygon')
 polygon(x = c(2,2,4,4),y = c(2,4,4,2))
 ```
+
+
+
 
 
 
@@ -391,9 +443,11 @@ ovm2 <- ovm[!(ovm$State %in% c("Alaska", "Hawaii")), ]
 
 #### a simple example
 
-```{r fig.dim=c(4, 2.5)}
+```{r}
 (d <- data.frame(x = c(0:9), y = c(1:10), z = c(rep(c("a", "b"), times = 5))))
+```
 
+```{r fig.dim=c(4, 2.5)}
 xyplot(y~x, data = d)
 xyplot(y~x, groups = z, data = d)
 xyplot(y~x | z, data = d)
@@ -406,13 +460,14 @@ xyplot(
 )
 ```
 
-
-### store lattice plots and update
+#### store lattice plots and update
 
 ```{r}
 (lat1 <- xyplot(Turnout ~ Income | Region,obama_vs_mccain))
 (lat2 <- update(lat1, col = "violet", pch = 20))
 ```
+
+
 
 ### univariate plot
 
@@ -432,7 +487,9 @@ barchart(births.dow)
 births2006.dm <- plyr::mutate(births[births$DMETH_REC != "Unknown",],
                               DMETH_REC = as.factor(as.character(DMETH_REC)))
 (dob.dm.tbl <- with(births2006.dm, table(WK = DOB_WK,MM = DMETH_REC)))
+```
 
+```{r}
 barchart(dob.dm.tbl)
 barchart(dob.dm.tbl, stack = F, auto.key = T)
 barchart(dob.dm.tbl, horizontal = F, groups = F)
@@ -443,7 +500,9 @@ barchart(dob.dm.tbl, horizontal = F, groups = F)
 
 ```{r}
 ovm2 %>% tibble::as_tibble()
+```
 
+```{r}
 barchart(State ~ Catholic, ovm2)
 barchart(State ~ Catholic + Protestant + Non.religious + Other, ovm2, stack = T)
 ```
@@ -483,7 +542,9 @@ histogram(~DBWT | DPLURAL, births, layout = c(1,5))
 
 ```{r}
 (plur = unique(as.character(births$DPLURAL))[4:5]) #quadruplet or higher
+```
 
+```{r}
 #By default, densityplot will draw a strip chart under each chart:
 densityplot(~DBWT | DPLURAL, births, subset = (DPLURAL %in% plur))
 #turn off the strip by plot.points = F because the data set is so big
@@ -592,7 +653,9 @@ levelplot(with(san, table(cut(longitude, 25),
 ```{r}
 model = lm(runs~singles + doubles + triples + stolenbases + homeruns + walks 
            + hitbypitch + sacrificeflies + caughtstealing, team.batting.00to08)
+```
 
+```{r}
 rfs(model)
 rfs(model,distribution  =  qnorm)
 ```
@@ -632,26 +695,3 @@ length(unlist(trellis.par.get()))
 })()
 ```
 
-## ggplot2
-
-- `labs(x = NULL)` can suppress x axis label
-
-- color
-
-```{r color}
-scales::show_col(scales::hue_pal()(4))
-```
-
-
-- legend
-
-```{r}
-library(ggplot2)
-ggplot(mtcars, aes(wt, mpg)) +
-    geom_point(aes(colour = factor(cyl), shape = factor(vs))) +
-    labs(x = "Weight (1000 lbs)", y = "Fuel economy (mpg)", colour = "Cylinders", shape = "Transmission") + 
-    theme(legend.background = element_rect(colour = 'purple', fill = 'pink', size = 3, linetype='dashed'), 
-		  legend.margin = margin(20,15,10,5), 
-		  legend.box.background = element_rect(colour = 'blue', fill = 'yellow', size = 5, linetype='solid'), 
-		  legend.box.margin = margin(10,20,30,40))
-```

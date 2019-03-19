@@ -1,11 +1,11 @@
 # (PART) R {-}
 
+
+
+
+
+
 # R language
-
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(collapse = TRUE)
-```
 
 
 
@@ -18,17 +18,46 @@ knitr::opts_chunk$set(collapse = TRUE)
 
 
 
-## Portable code
+### style
 
-to be portable, `.Rprofile` should not cause error
+- only use `<-` for
+  1. function definition
+  2. initialize varible, especially when definition is far from first usage (initialize means you create the varible only once)
+  3. `foobar(...) <- value`, though it's okay to use `=`, but modifing arguments using function is rare in R, so use `<-` can help you remind what you are doing and be consistency with how the function is defined
 
-```r
-if ('pkg' %in% .packages(T)) options('defaultPackages' = unique(c(getOption('defaultPackages'), 'pkg')))
+
+
+### Unnoticed feature
+
+```{r}
+as.character(NA) %T>% print %>% class()
+
+as.character(NULL) %T>% print %>% class()
+```
+
+```{r}
+0xFfE4
 ```
 
 
 
+### Statistics
+
+```r
+?e1071::skewness
+?e1071::kurtosis
+
+?TukeyHSD
+```
+
+
+
+
+
+
 ## function, evaluation, environment
+
+
 
 ### core rules
 
@@ -36,7 +65,9 @@ if ('pkg' %in% .packages(T)) options('defaultPackages' = unique(c(getOption('def
 2. call stack to decide where (start point) to evaluate the argument
 3. lexically scoping to where to find undefined symbol in the argument
 
-### examples
+
+
+### lazy evaluation
 
 ```{r}
 f <- function(x) {y <- 1; message('in f()'); x;}
@@ -57,6 +88,9 @@ f(message('evaluate argument'))
 In `f()`, passing the parameter `x` as argument for `g()` doesn't evaluate it.
 
 
+
+### call stack
+
 ```{r}
 f <- function(x) {message('in f()'); g(x)}
 g <- function(x) {message('in g()'); y <- 2; x}
@@ -65,7 +99,11 @@ y <- 1
 f(message('y = ', y))
 ```
 
-As for where the argument `message('y = ', y)` is evaluated, we start from the execution env of `g()`, along call stack, travel to the caller env of `f()`, i.e., the global env.
+We already know that, `message('y = ', y)` is lazy evaluated after `y <- 2` inside `g()`. However，when the evaluation happens, the stage is NOT the execution env of `g()`. Rather, we start from there, backtrack the call stack,  until we arrive the start point, i.e., the caller env of `f()` (the global env here).
+
+
+
+### lexically scoping
 
 ```{r}
 g <- function(u) (u + v) / 2  
@@ -79,90 +117,109 @@ h(10)
 
 Although `g()` is called inside `h()`, it finds `v` in where it's defined, i.e., the global env.
 
+Actually, lexically scoping is not a special rule, and the implemention is rather straightforward. The execution environment's parent is function environment, i.e., when the function is created. So we just need to follow the general rule of parent environment.
 
-### other details
 
-1. the evaluation of argument happens only once, refer to [here](https://bookdown.dongzhuoer.com/hadley/adv-r/lazy-evaluation.html#promises)
-1. lexically scoping is implemented in that the execution environment's parent is function environment, i.e., when the function is created. 
+### technical details
+
+1. the evaluation of argument happens only once, refer to [here](https://bookdown.dongzhuoer.com/hadley/adv-r/lazy-evaluation.html#promises) 
 1. call stack is implemented in that a frame's parent is the previous frame, refer to [here](https://bookdown.dongzhuoer.com/hadley/adv-r/call-stack.html#frames)
 1. when you write a function factory, you may need to [force evaluation](https://bookdown.dongzhuoer.com/hadley/adv-r/factory-fundamentals.html#forcing-evaluation)
 
 
 
-## style
 
-### `<-`
-
-1. function definition
-2. initialize varible, especially when definition is far from first usage (initialize means you create the varible only once)
-3. `foobar(...) <- value`, though it's okay to use `=`, but modifing arguments using function is rare in R, so use `<-` can help you remind what you are doing and be consistency with how the function is defined
-
-
-
-## Unnoticed feature
-
-```{r}
-as.character(NA) %T>% print %>% class()
-
-as.character(NULL) %T>% print %>% class()
-```
-
-```{r}
-0xFfE4
-```
 
 
 ## install packages
 
+
+
 ### Bioconductor
 
-**remotes** allows you specify a certain Bioconductor version when installing packages, like
-`remotes::install_bioc('3.7/ggtree')`. But this only works _package-wise_, i,e, if you install other package, it still use the default Bioconductor version ^[At the time of this writing, `remotes::install_bioc('clusterProfiler')` would use Bioconductor 3.8]. 
+If you want use a particular Bioconductor version, say 3.7, `BiocManager::install(version = '3.7')`. 
 
-If you want all Bioconductor packages comes from the same Bioconductor version, use
-`BiocManager::install(version = '3.7')`.
+As a special case, **remotes** allows you specify a certain Bioconductor version when installing packages, like `remotes::install_bioc('3.7/ggtree')`. However, this only works _package-wise_, i,e, if you install other package, it still use the default Bioconductor version ^[At the time of this writing, `remotes::install_bioc('clusterProfiler')` would use Bioconductor 3.8]. 
 
 
 
 ### Administration and Maintances of R Packages
 
-https://mirrors.tuna.tsinghua.edu.cn/CRAN/bin/linux/ubuntu/README.html
-
-There are typically three directories: `"/usr/local/lib/R/site-library"`, `"/usr/lib/R/site-library"`, `"/usr/lib/R/library"`. If you use RStudio, you will even a forth `"/home/${USER}/R/x86_64-pc-linux-gnu-library/3.4"`.
-
-I perfer to remove `"/usr/local/lib/R/site-library"` since I get duplicated packages[^1] when I use `source("https://install-github.me/username/repo")`.
-
-I think it's wise to keep `"/usr/lib/R/library"` clean, which makes it very convenient to update or reinstall R.
-
-1. when there are many users, for example a server with RStudio Server and Shiny Server installed
-
-    Use `sudo R -e "install.packages(package, repos='https://cran.rstudio.com/', lib = '/usr/lib/R/site-library/')"` to install **most** packages, especially those needed by hosted Shiny apps.
-
-    If someone log into RStudio Server, he can install **a few** packages into `${HOME}/.local/lib/R` to meet his particular desire.
-
-1. when there are only one user, such as your own Ubuntu
-
-    edit `~/Renviron` to change the forth directory to `"${HOME}/.local/lib/R`. 
-
-    Install your packages using RStudio. 
-
-    In theory, `"/usr/lib/R/site-library"` should keep empty.
-
-In both case, you should be awared that install packages as nomral user may cause duplicated package (when one of core packages has been updated). 
-
-[^1]: they both exist in `"/usr/local/lib/R/site-library"` and `"/usr/lib/R/site-library"`
+1. `/usr/lib/R/library` should keep clean, which makes it very convenient to update or reinstall R.
+1. `/usr/lib/R/site-library` is useful when there are many users, and they all need many common packages. ^[Another example is a server with Shiny Server installed. There `root` may need some packages for Shiny apps hosted. And the normal user can also use these packages, although he may not need.]
+1. `/usr/local/lib/R/site-library` should be removed ^[I get duplicated packages when I use `source("https://install-github.me/username/repo")`].
+1. user library, I prefer to use `~/.local/lib/R` ^[add `R_LIBS_USER="~/.local/lib/R"` in `~/.Renviron`], although RStudio's default is `/home/${USER}/R/x86_64-pc-linux-gnu-library/3.4`.
 
 
-## Statistics
 
-```r
-?e1071::skewness
-?e1071::kurtosis
 
-?TukeyHSD
+
+
+## forcats
+
+```{r message=FALSE}
+library(tidyverse)
 ```
 
+**factors** aims to handle categorical variables, i.e., `factor` class in R.
 
+Here we explain two reordering functions.
+
+
+
+### `forcats::fct_reorder(f, x)`   
+
+each level is associated with a `x` value (if multiple, use a function such as `median()` to generate a single value), the order is determined by sorting the corresponding `x` value.
+
+```{r fct-reorder, collapse=TRUE}
+with(iris, forcats::fct_reorder(Species, Sepal.Width)) %>% levels
+
+iris %>% group_by(Species) %>% summarise(Sepal.Width = median(Sepal.Width)) %>%
+    arrange(Sepal.Width) %>% .$Species %>% as.character()
+```
+
+As you can see in following plot, `Species` has been reordered by median of `Sepal.Width`.
+
+```{r fct-reorder-plot, fig.cap='forcats::fct_reorder()'}
+cowplot::plot_grid(
+    iris %>% 
+        ggplot(aes(Species, Sepal.Width)) + geom_boxplot() + 
+        labs(title = 'original'),
+    iris %>% mutate(Species = forcats::fct_reorder(Species, Sepal.Width)) %>%
+        ggplot(aes(Species, Sepal.Width)) + geom_boxplot() + 
+        labs(title = 'reorder')
+)
+```
+    
+
+
+### `forcats::fct_reorder2(f, x, y)`  
+
+Each level is associated with many `x` values and many `y` values, we use a function such as `max()` to select a `x` value, then we can get the corresponding `y` value. Now each level is associated with a single `y` value, and we can determine the order by sorting those `y` values. [^fct-reorder2-plot]
+
+```{r fct-reorder2}
+set.seed(0)
+chkw <- ChickWeight %>% head(60) %>% mutate_at('Chick', forcats::fct_shuffle)
+
+
+with(chkw, forcats::fct_reorder2(Chick, Time, weight)) %>% levels()
+
+chkw %>% group_by(Chick) %>% arrange(desc(Time)) %>% slice(1) %>% ungroup() %>% 
+    arrange(desc(weight)) %>% .$Chick %>% as.character()
+```
+
+As you can see in following plot, the vertical line (max `Time`), `Chick` has been reordered by `weight` at that line.
+
+```{r fct-reorder2-plot, fig.cap='forcats::fct_reorder2()'}
+cowplot::plot_grid(
+    chkw %>% 
+        ggplot(aes(Time, weight, colour = Chick)) + geom_point() + geom_line() + 
+        geom_vline(xintercept = 21, alpha = 0.2) + labs(title = 'original'),
+    chkw %>% mutate(Chick = forcats::fct_reorder2(Chick, Time, weight)) %>% 
+        ggplot(aes(Time, weight, colour = Chick)) + geom_point() + geom_line() + 
+        geom_vline(xintercept = 21, alpha = 0.2) + labs(title = 'reorder')
+)
+```
 
 
 

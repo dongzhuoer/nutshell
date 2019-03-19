@@ -12,6 +12,7 @@ output:
         dev: png
         highlight: haddock
         css: bookdown.css
+        split_by: section+number
         config:
             toc:
                 collapse: section

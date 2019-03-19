@@ -13,7 +13,7 @@ env:
     - repo_branch=master
     - work_dir=$TRAVIS_BUILD_DIR/..
     - system_dep=""   
-    - install_pkg="Sys.setenv('GITHUB_PAT' = '$GITHUB_PAT');"
+    - install_pkg="Sys.setenv('GITHUB_PAT' = '$GITHUB_PAT'); remotes::update_packages(c('magrittr', 'tidyverse', 'cowplot', 'testthat', 'plyr', 'gridExtra', 'nutshell', 'learningr', 'lattice'))"
     - render_args=""
     - zhuoerdown=false
 

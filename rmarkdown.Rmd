@@ -4,7 +4,12 @@
 
 
 
-## include `.Rmd` source
+
+##  Tips
+
+
+
+### include `.Rmd` source
 
 See the `.Rmd` of this post for how I produce the following:
 
@@ -15,6 +20,41 @@ See the `.Rmd` of this post for how I produce the following:
 mean(1:5)
 ```
 ````
+
+
+
+### 调整输出格式
+
+- 显示小数
+
+```{r}
+rnorm(10) %>% formatC(digits = 3, format = 'f')
+```
+
+- 修改宽度
+
+有时候嫌内容太窄（尤其是 print tibble 和用 R 生成的表格），需要把文档调宽一点。
+  
+具体区别没分析，两个都写上吧
+  
+```r
+knitr::opts_knit$set(width = 100)
+options(width = 100)
+```
+
+
+
+### Pandoc
+
+- syntax highlight
+
+  ```bash
+  pandoc --list-highlight-languages
+  pandoc --list-highlight-styles
+  ```
+
+- `head_include` won't work without other options (such as `-s`), since the default output format seems to be HTML fragment.
+
 
 
 
@@ -114,37 +154,16 @@ if (length(github_pkg) > 0) remotes::install_github(github_pkg)
 'dir-name' %>% {if (!dir.exists(.)) dir.create(.)}
 ```
 
-
-### Portable code
-
-- change default package in `.Rprofile`
-to be portable,  should not cause error
-
-```r
-if ('pkg' %in% .packages(T)) options('defaultPackages' = unique(c(getOption('defaultPackages'), 'pkg')))
-```
+- not load package in Rprofile, you should make explicit what you do in each `.Rmd`
 
 
-## 调整输出格式
 
-### 显示小数
 
-```{r}
-rnorm(10) %>% formatC(digits = 3, format = 'f')
-```
 
-### 修改宽度
-
-有时候嫌内容太窄（尤其是 print tibble 和用 R 生成的表格），需要把文档调宽一点。
-  
-具体区别没分析，两个都写上吧
-  
-```r
-knitr::opts_knit$set(width = 100)
-options(width = 100)
-```
 
 ## trouble-shotting
+
+
 
 ### character in pdf (svglite) device
 
@@ -155,6 +174,8 @@ the solution lives [here](https://yihui.name/knitr/demo/graphics/#encoding-of-mu
 ```r
 options(device = "cairo_pdf")
 ```
+
+
 
 ### debug `rmarkdown::render()`
 
@@ -167,18 +188,6 @@ new_chunk_hook <- function(x, options) {
 knitr::knit_hooks$set(chunk = new_chunk_hook)
 knitr::opts_chunk$set(mutable_var = Sys.time()) # disable cache
 ```
-
-
-## pandoc tips
-
-- syntax highlight
-
-  ```bash
-  pandoc --list-highlight-languages
-  pandoc --list-highlight-styles
-  ```
-
-- `head_include` won't work without other options (such as `-s`), since the default output format seems to be HTML fragment.
 
 
 

@@ -4,7 +4,14 @@
 # Travis CI
 
 
-## apt packages
+
+
+
+## basics
+
+
+
+### apt packages
 
 ```yaml
 addons:
@@ -15,7 +22,7 @@ addons:
       - time
 ```
 
-## tips
+
 
 ### terminate build
 
@@ -25,9 +32,11 @@ script:
   - travis_terminate 0
 ```
 
+
+
 ### trigger build
 
-need to set the environment variable `TRAVIS_TOKEN`
+In **Settings**, add `TRAVIS_TOKEN` environment variable.
 
 ```yaml
 after_success:
@@ -36,7 +45,13 @@ after_success:
 ```
 
 
+
+
+
+
 ## automatically tasks template
+
+
 
 ### Overview
 
@@ -53,7 +68,9 @@ We abstract the follwing structure:
 |---- extra: other files needed to minor tune the building process, often shipped in the build repo
 ```
 
-### Travis code
+
+
+### `.travis.yml`
 
 ```yaml
 language: generic
@@ -89,7 +106,7 @@ notifications:
 
 
 
-## changlog
+### changlog
 
 - 12/22, fix the bug can't deploy to non-master branch (add `-b branch_name` to clone)
 

@@ -16,6 +16,10 @@ output:
         config:
             toc:
                 collapse: section
+                before: |
+                    <li><span>one line</span></li>
+                    <li><span>a second line</span></li>
+                after: <li><a href="https://github.com/rstudio/bookdown" >Built by <strong>bookdown</strong></a></li>
             download: no
             sharing:
                 github: yes

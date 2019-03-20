@@ -1,14 +1,41 @@
-# bookdown，将来写一本书时可能用到的
+```{r include=FALSE, cache=FALSE}
+# adapted from https://github.com/hadley/r4ds/blob/master/_common.R
+
+set.seed(1014)
+options(digits = 3)
+
+knitr::opts_chunk$set(
+  comment = "#>",
+  collapse = TRUE,
+  error = TRUE,
+  cache = TRUE,
+  fig.align = 'center',
+  fig.width = 6,
+  fig.asp = 0.618,  # 1 / phi
+  out.width = "70%"
+)
+
+options(dplyr.print_max = 10)
+
+```
+# bookdown
 
 
 
-## content
+
+
+
+## Usage
+
+
 
 ### conventions 
 
 - ``` `` ``` for inline code, file name and menu command
 - **bold** to indicate special meaning ^[For example, in normal context, knitr is treated as a typo; but **knitr** means a R package]
 -  _italic_ to emphasis important points 
+
+
 
 ###  custom header number and filename 
 
@@ -20,65 +47,8 @@
 ```
 
 
-## configuration 
 
-### `_bookdown.yml`
-
-```yaml
-book_filename: *
-output_dir: gitbook
-delete_merged_file: yes
-new_session: yes
-language:
-  label:
-    fig: "Figure "
-    tab: "Table "
-  ui:
-    edit: "Edit"
-    chapter_name: "Chapter "
-rmd_files:
-  - "index.Rmd"
-  - "body.Rmd"
-```
-
-### `_output.yml`
-
-```yaml
-bookdown::gitbook:
-  dev: svglite
-  split_by: section+number
-  config:
-    toc:
-      collapse: section
-      before: |
-        <li><span>one line</span></li>
-        <li><span>a second line</span></li>
-      after: <li><a href="https://github.com/rstudio/bookdown" >Built by R bookdown</a></li>
-    edit: https://github.com/dongzhuoer/*/edit/master/%s
-    sharing:
-      github: yes
-      facebook: no
-      twitter: no
-```
-
-### `index.Rmd`
-
-```
----
-title: "*"
-author: "Zhuoer Dong"
-date: "`r Sys.Date()`"
-knit: "bookdown::render_book"
-site: bookdown::bookdown_site
-description: "*"
-github-repo: dongzhuoer/*
----
-
-## Perface {#perface -}
-```
-
-
-## others
+### others
 
 - you may inset the following to the head of chapter `.Rmd`
 
@@ -87,22 +57,63 @@ github-repo: dongzhuoer/*
   ```
 
 - you should use `-` rather than `_` for figure label, to make cross-reference work.
+- [Internationalization](https://bookdown.dongzhuoer.com/yihui/bookdown/internationalization.html)
+
+
+
+
 
 
 ## build others' bookdown book in my preference
 
 
-## customize other's book
+We use `zhuoerdown` environment varible to distinguish building my own book from building other's book.
 
-关于目录
+Although some part may seem redundant for `zhuoerdown=true`, it make possible to share the same code for both approaches. 
 
-  - 章超过一页一般就collapse，如 r4ds, rmarkdown
-  - 所有内容在 2～3页，展开显示，如 blogdown
-  - 子标题严重不均匀，尤其要展开，如 bookdown
 
-## Tips
 
-### parse dependency
+### `.travis.yml`
+
+We offer three examples:
+
+- r4ds: https://github.com/dongzhuoer/build-r4ds/blob/master/.travis.yml
+- yihui-blogdown: https://github.com/dongzhuoer/build-yihui-blogdown/blob/master/.travis.yml
+- nutshell: https://github.com/dongzhuoer/nutshell/blob/master/.travis.yml
+
+
+
+### Overview
+
+There are mainly three directories:
+
+- `input/` for input `.Rmd` files
+- `output/` for GitBook output
+- `repo/` for deploying the output to GitLab
+
+[**zhuoerdown**](https://github.com/dongzhuoer/zhuoerdown) provides the following capacity:
+
+- add [bookdown.css](https://github.com/dongzhuoer/zhuoerdown/blob/master/inst/bookdown.css)
+- add several links in TOC
+- customize output by [_output.yaml](https://github.com/dongzhuoer/zhuoerdown/blob/master/inst/_output.yaml), then by user provided `_output.yaml` (in `extra/`)
+
+
+
+### add a new book
+
+1. clone Git repo (`github-copy user/repo`)
+1. build book on local: 
+   ```r
+   bookdown::render_book(''); browseURL('_book/index.html')
+   ```
+1. create the output repo named `*.gitbook` on GitLab
+1. create build repo on GitHub by coping a template
+1. Travis add all three tokens to environment variable
+1. add the book to `bookdown.dongzhuoer.com` repo
+
+
+
+### parse package dependency
 
 ```bash
 # possibly used pacakge
@@ -111,14 +122,16 @@ cat *.Rmd | grep -Po '[\w\.]+(?=::)' | sort -u | sed 's/$/,/'
 cat *.Rmd | grep -Po '(?<=\[@R-)[\w\.]+' | sort -u | sed 's/$/,/' 
 ```
 
-## build on travis
 
-We offer two examples:
+### customize TOC
 
-- r4ds: https://github.com/dongzhuoer/build-r4ds/blob/master/.travis.yml
-- yihui-blogdown: https://github.com/dongzhuoer/build-yihui-blogdown/blob/master/.travis.yml
+- 章超过一页一般就collapse，如 r4ds, rmarkdown
+- 所有内容在 2～3页，展开显示，如 blogdown
+- 子标题严重不均匀，尤其要展开，如 bookdown
 
-### details
+
+
+### technical details
 
 The biggest restraint is that `bookdown::render_book()` requires workspace at the book folder.
 
@@ -126,31 +139,8 @@ For _blogdown_, `.Rmd` lives in `docs/`. If you `setwd()` to there, many paths w
 
 So I thought about adding a environment variable `input_sub_dir`. But _blogdown_ doesn't collaborate, it refer to the some source code of the package by `../R/***.R`.
 
-Suddenly, I realized that instead of setting every path relative to workspace, we can have `to_work_dir` to walk to `$work_dir`. In this way, every other path remains unchanged (`output`, `extra/_output.yaml`), user only need to customize `rmd_dir` & `to_work_dir`, like `rmd_dir=. to_work_dir=..`, `rmd_dir=docs to_work_dir=../..`.
-
-## add a new book
+Suddenly, I realized that instead of setting every path relative to workspace, we can have `to_work_dir` to walk to `$work_dir`. In this way, every other path remains unchanged (`output`, `extra/_output.yaml`), user only need to customize `rmd_dir` & `to_work_dir`, like `rmd_dir=.; to_work_dir=..;`, `rmd_dir=docs; to_work_dir=../..;`.
 
 
-1. clone Git repo (`github-copy user/repo`)
-1. build book on local: 
-   ```r
-   bookdown::render_book(''); browseURL('_book/index.html')
-   ```
-1. create a repo on GitLab: 
-   - open `empty`, 
-   - `export repo=repo_name`
-   - push to GitLab using following code
-   ```bash
-   git remote add gitlab git@gitlab.com:dongzhuoer/$repo.gitbook.git
-   git push -u gitlab master
-   git remote remove gitlab
-   ```
-1. create build repo
-   - create repo on GitHub
-   - copy a `build-*` and rename, remove old remote, then push to GitHub the normal way
-
-1. travis CI
-   add tokens to environment variable (maybe )
 
 
-1. `bookdown.dongzhuoer.com`

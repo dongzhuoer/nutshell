@@ -1,13 +1,39 @@
 # (PART) other language {-}
 
-# yaml
+# YAML, etc
+
+This chapter aims to include simple language, althought currently only include YAML
 
 
 
-This post mainly covers [yaml in R](https://github.com/viking/r-yaml), see [中文教程](http://www.ruanyifeng.com/blog/2016/07/yaml.html) for more information.
 
 
-## yes or no, that is a question
+
+## YAML
+
+> 用相同数目的空格（我推荐 4个）缩进元素，来表示层级关系。
+
+See [中文教程](http://www.ruanyifeng.com/blog/2016/07/yaml.html) for detailed guide. Here we mainly talked about YAML used for configuration.
+
+
+
+### basics
+
+```yaml
+age: 27
+men: [John, Bill]
+women:
+  - Mary
+  - Susan
+websites:
+  YAML: yaml.org 
+```
+
+
+
+### yes or no, that is a question
+
+这一节是我无意中发现的，当时在纠结到底应该写 `yes|no` 还是 `true|false`（最后我选择了前者，因为 YAML 强调 human-readable）。
 
 ```yaml
 yes: yes
@@ -45,73 +71,9 @@ Wa, the world is so nice!
 
 
 
-## vector
-
-There are two ways to represent vectors:
-
-```yaml
-rmd_files: ["index.Rmd", "body.Rmd"]
-```
-
-```yaml
-rmd_files:
-  - "index.Rmd"
-  - "body.Rmd"
-```
-
-the following ways is also okay, but not recommended (at least by me)
-
-```yaml
-rmd_files: [
-  "index.Rmd", 
-  "body.Rmd"
-]
-```
-
-or even
-
-```yaml
-rmd_files: [
-  "index.Rmd", 
-  "body.Rmd",
-]
-```
 
 
 
-## list
+## TOML
 
-缩进的空格数目不重要，只要相同层级的元素左侧对齐即可
-
-Values can also be lists of values. You just need to indent the values by two more spaces, e.g.,
-
-```yaml
-output:
-  bookdown::gitbook:
-    split_by: "section"
-    split_bib: no
-```
-
-It is a common mistake to forget to indent the values. For example, the following data
-
-```yaml
-output:
-html_document:
-toc: yes
-```
-
-actually means
-
-```yaml
-output: null
-html_document: null
-toc: yes
-```
-
-instead of what you probably would have expected:
-
-```yaml
-output:
-  html_document:
-    toc: yes
-```
+To be written.

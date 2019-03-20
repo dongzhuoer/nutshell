@@ -3,7 +3,9 @@
 
 
 
-## install docker 
+
+
+## installing 
 
 > Windows 10 need Pro version, so we only talk about Ubuntu here.
 
@@ -19,11 +21,16 @@ sudo usermod -a -G docker $USER
 
 
 
-## Dockerfile practice
+
+
+
+## Dockerfile
 
 ### empty image
 
 [scratch](https://hub.docker.com/_/scratch)
+
+
 
 ### apt
 
@@ -31,13 +38,14 @@ sudo usermod -a -G docker $USER
 RUN apt update && apt -y install wget && rm -r /var/lib/apt/lists/
 ```
 
-if you install, use, then remove some packages, add `apt -y autoremove `
+If you install, use, then remove some packages, add `apt -y autoremove ***`.
+
+
 
 ### use environment variable for private information
 
-> first used for evading GitHub API limit in installing R packages
+> The technique is firstly used for evading GitHub API limit in installing R packages.
 
-in `Dockerfile`: `ARG GITHUB_PAT`
-
-then add `--build-arg GITHUB_PAT=${GITHUB_PAT` in `docker build` command
+- in `Dockerfile`: `ARG GITHUB_PAT`
+- in `docker build`, add `--build-arg GITHUB_PAT=${GITHUB_PAT`
 

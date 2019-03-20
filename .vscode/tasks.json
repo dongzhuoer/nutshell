@@ -8,12 +8,16 @@
     },
     "tasks": [
         {
-            "label": "build",
-            "command": "R -e \"bookdown::render_book('')\"",
+            "label": "preview chapter",
+            "command": "R -e \"bookdown::preview_chapter('${relativeFile}')\"",
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
+        },
+        {
+            "label": "build book",
+            "command": "R -e \"bookdown::render_book('')\"",
         },
         {
             "label": "view",

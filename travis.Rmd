@@ -17,6 +17,14 @@ addons:
 
 ## tips
 
+### terminate build
+
+```yaml
+script:
+  - echo "Hello world"
+  - travis_terminate 0
+```
+
 ### trigger build
 
 need to set the environment variable `TRAVIS_TOKEN`

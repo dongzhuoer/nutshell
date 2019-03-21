@@ -18,5 +18,5 @@ rmd_files:
   - git.Rmd
   - docker.Rmd
   - travis.Rmd
-  - vscode.Rmd
+  - software.Rmd
 

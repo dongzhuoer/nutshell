@@ -1,0 +1,100 @@
+# GUI software
+
+
+
+
+
+
+## VSCode shortcut
+
+当时花了我不少功夫，虽然后来好多都没用上，但在 code editing 方面 VScode 简直是不要太爽。
+
+- `Select`: Quick and Simple Text Selection，press twice to select outer.
+
+### Ctrl
+
+|                      |                      |                 |                     |                 |                  |                   |
+|----------------------|----------------------|-----------------|---------------------|-----------------|------------------|-------------------|
+| `1` Split Editor     | `2`  Select in Tag   | `3` Select `()` | `4`                 | `5`             | `6`              | `7`               |
+| `q` Select **Q**uote | `w` close **W**indow | `e` Select `[]` | `r` Open **R**ecent | `t` **T**est    | `y` Redo         | `u`               |
+| `a` Choose **A**ll   | `s` **S**ave         | `d` Select `{}` | `f` **F**ind        | `g`  Quick Open | `h` Replace      | `j` **J**oin Line |
+| `z` Undo             | `x` Cut              | `c` **C**opy    | `v` Paste           | `b`  **B**uild  | `n` **N**ew file | `m`               |
+  : `ctrl` shortcut keymap
+
+- `ctrl+c/v/x` act the whole line when you haven't selected anything
+- In `Quick Open`, you can press `right` to open a file in the background. Except opening files, you to can do many things (just type `?`).
+
+
+
+### ctrl+shift
+
+|                    |                  |                      |                     |                        |                    |
+|--------------------|------------------|----------------------|---------------------|------------------------|--------------------|
+| `1` Editor Layout  | `2`              | `3`                  | `4`                 | `5`                    | `6`                |
+| `q` Select `` ` `` | `w`              | `e`                  | `r` **R** terminal  | `t`                    | `y`                |
+| `a`                | `s` **S**ave all | `d`                  | `f` **F**ormat all  | `g` **G**o to Line     | `h`                |
+| `z` Zen            | `x`              | `c` **C**omment Line | `v` Pre**v**iew .md | `b`  Comment **B**lock | `n` **N**ew Window |
+  : `ctrl+shift` shortcut keymap
+
+
+
+### alt
+
+|                      |             |             |     |                  |     |           |     |                     |
+|----------------------|-------------|-------------|-----|------------------|-----|-----------|-----|---------------------|
+| `1` Group 1          | `2` Group 2 | `3` Group 3 | `4` | `5`              | `6` | `7`       | `8` | `9`                 |
+| `q` Switch **Q**uote | `w`         | `e`         | `r` | `t`              | `y` | `u`       | `i` | `o` **O**pen Folder |
+| `a`                  | `s`         | `d`         | `f` | `g`              | `h` | `j` Panel | `k` | `l` **L**anguage    |
+| `z` Wrap             | `x`         | `c`         | `v` | `b` Side **B**ar | `n` | `m`       | `,` | `.`                 |
+  : `alt` shortcut keymap
+
+
+
+### 方向键
+
+| shortcut               | action                    |
+|------------------------|---------------------------|
+| `ctrl+up/down`         | Copy Line                 |
+| `alt+up/down`          | Move Line                 |
+| `ctrl+shift+up/down`   | Insert Cursor Above/Below |
+| `ctrl+left/right`      | Preview/Next Editor       |
+| `ctrl+shift+lef/right` | Smart Select Grow/Shrink  |
+| `home/end`             | Top/Bottom                |
+| `ctrl+home/end`        | Line Begin/End            |
+
+
+
+### others 
+
+| shortcut           | action                   |
+|--------------------|--------------------------|
+| `ctrl+o`           | **O**pen File            |
+| `` ctrl+` ``       | Intergrated Ternimal     |
+| `` ctrl+shift+` `` | New Intergrated Ternimal |
+| `alt+shift+s`      | User **S**etting         |
+| `F1`               | Command Palette          |
+| `shift+alt+drag`   | Column Selection         |
+| `alt+drag`         | Multiple cursor          |
+  : other  shortcut
+
+
+
+
+
+## Windows web server
+
+
+1. `控制面板` => `程序和功能` => `启用或关闭Windows功能` => `Internet Information Services` 
+   
+   just click once, system will automatically needed sub-service
+
+2. `IIS` => right click `网站` => `添加网站` => `网站名称` + `物理路径` + `端口` (such as 81 ^[I don't use 80 since others can access you. Although it's okay for public site, bandwidth is money in Nankai LAN]) 
+
+   - `类型`: use the default value, `http`, since `https` requires a SSL certificate
+   - `IP 地址`: `全部未分配` means http://localhost:*, other optional IPs are also okay. But customed IP won't work.
+   - `主机名`: don't specify that
+
+3. (optional) install `Internet Information Services/万维网服务/安全性/IP安全` and set `IP 地址和域限制` to disable public access.
+
+
+

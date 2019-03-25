@@ -4,6 +4,8 @@
 
 # Linux system management
 
+- [understanding `~/.bashrc`](https://dongzhuoer.com/post/caprice/2018/bashrc/)
+
 
 
 
@@ -184,7 +186,7 @@ dpkg -L package         # an installed package, use `dpkg-query -L`
 - [阮一峰中文教程](http://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-commands.html)
 - [Red Hat documentation](https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/System_Administrators_Guide/chap-Managing_Services_with_systemd.html)
 - `man systemd.service`
-- [override some settings in `.service` without modifying original file](https://dongzhuoer.com/post/systemd-crash-teach-me-overwriting-service)
+- [override some settings in `.service` without modifying original file](https://dongzhuoer.com/post/caprice/2018/systemd-crash-teach-me-overwriting-service)
 
 
 

@@ -1,0 +1,342 @@
+# shadowsocks: bypassing GFW
+
+```bash
+sudo apt -y install python-pip python-m2crypto haproxy privoxy
+sudo -H pip install git+https://github.com/shadowsocks/shadowsocks.git@2.9.1
+```
+
+## install shadowsocks
+
+Unless otherwise specified, all steps show be done on both server and client
+
+### install software
+
+
+```bash
+sudo apt -y install python-pip python-m2crypto haproxy privoxy
+sudo -H pip install shadowsocks
+```
+
+> Installing M2Crypto will make encryption a little faster. ^[https://github.com/shadowsocks/shadowsocks/wiki/Encryption]
+
+### shadowsocks configuration file
+
+
+(https://github.com/shadowsocks/shadowsocks/wiki/Configuration-via-Config-File)
+
+`sudo mkdir /etc/shadowsocks`
+    
+`sudo vim /etc/shadowsocks/ipv4.json`
+```json
+{
+    "server":      "my ipv4",
+    "server_port": 21,
+    "local_port":  1084,
+    "password":    "my password",
+    "fast_open":   true
+}
+```
+
+1. `server_port`
+
+        https://github.com/iMeiji/shadowsocks_install/wiki/shadowsocks-optimize
+
+        > 此外，选择合适的端口也能优化梯子的速度，广大SS用户的实践经验表明，检查站（GFW）存在一种机制来降低自身的运算压力，即常用的协议端口（如http，smtp，ssh，https，ftp等）的检查较少，所以建议SS绑定这些常用的端口（如：21，22，25，80，443），速度也会有显著提升。
+
+        I use 80 for ipv4 since 80 < 443 and 4 < 6. 
+
+1. `local_port`
+
+    It's ignored by `ssserver`, but I add it so that I can just directly copy the configuration files from local to server without any modifications.
+    
+1. `method`
+
+    They are so many different opinions. I finally gave up and chose to just trust the developers [They will choose the best method for me, I even don't bother to set it.].
+        
+
+1. `fast_open`
+
+    
+    `sudo vim /etc/sysctl.d/local.conf`
+    ```
+    # turn on TCP Fast Open on both client and server side
+    net.ipv4.tcp_fastopen = 3
+    ```
+
+    ```bash
+    sudo sysctl --system
+    ```
+
+1. `workers`
+    
+    For example, if you set to 4, you will get 4 child process
+
+    https://github.com/shadowsocks/shadowsocks/issues/900
+
+    > 对于python来说，是没有正真意义上的多线程的，因此通过worker实现多进程，提高性能，通常来说，一个cpu核心给4个worker应该差不多
+
+    
+
+### haproxy (for client)
+    
+http://tyr.gift/lb-pac-proxy.html
+
+`sudo vim /etc/haproxy/haproxy-ss.cfg`
+```
+global
+    ulimit-n 51200
+    maxconn 4096
+
+defaults
+    mode    tcp
+    timeout connect 5s
+    timeout client  1m
+    timeout server  1m
+    balance roundrobin
+
+frontend shadowsocks-in
+    bind 127.0.0.1:1080
+    default_backend shadowsocks-out
+
+backend shadowsocks-out
+    server ipv4 127.0.0.1:1084 check inter 1500 rise 3 fall 3 backup
+    server ipv6 127.0.0.1:1086 check inter 1500 rise 3 fall 3    
+```
+
+`sudo vim /etc/systemd/system/haproxy-ss.service`
+```
+[Unit]
+Description=HAProxy Load Balancer for Shadowsocks client
+Documentation=man:haproxy(1)
+Documentation=file:/usr/share/doc/haproxy/configuration.txt.gz
+After=network.target syslog.service
+Wants=syslog.service shadowsocks-ipv4.service shadowsocks-ipv6.service
+
+[Service]
+Environment="CONFIG=/etc/haproxy/haproxy-ss.cfg" "PIDFILE=/run/haproxy-ss.pid"
+EnvironmentFile=-/etc/default/haproxy
+ExecStartPre=/usr/sbin/haproxy -f $CONFIG -c -q $EXTRAOPTS
+ExecStart=/usr/sbin/haproxy-systemd-wrapper -f $CONFIG -p $PIDFILE $EXTRAOPTS
+ExecReload=/usr/sbin/haproxy -f $CONFIG -c -q $EXTRAOPTS
+ExecReload=/bin/kill -USR2 $MAINPID
+KillMode=mixed
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+sudo systemctl disable haproxy
+sudo systemctl enable haproxy-ss
+sudo systemctl start haproxy-ss
+sudo systemctl status haproxy-ss
+```
+
+## provixy
+
+`sudo vim /etc/privoxy/shadowsocks.config`
+```
+user-manual /usr/share/doc/privoxy/user-manual
+logfile logfile
+listen-address  127.0.0.1:1081
+listen-address  [::1]:1081
+keep-alive-timeout 5
+tolerate-pipelining 1
+socket-timeout 300
+forward-socks5 / 127.0.0.1:1080 .
+```
+
+minimal[^minimal]: only use shadowsocks for a few websites, such as GitHub, Google
+
+
+[^minimal]: 
+    ```
+    user-manual /usr/share/doc/privoxy/user-manual
+    logfile logfile
+    listen-address  127.0.0.1:1082
+    listen-address  [::1]:1082
+    keep-alive-timeout 5
+    tolerate-pipelining 1
+    socket-timeout 300
+    forward   /  .
+    forward-socks5 .github.com 127.0.0.1:1080 .
+    forward-socks5 .google.com 127.0.0.1:1080 .
+    ```
+
+temp-external [^temp-external]: Tranfrom socks5 proxy to http proxy using privoxy to let other people inside NKU LAN break GFW
+
+[^temp-external]: 
+
+    ```
+    user-manual /usr/share/doc/privoxy/user-manual
+    logfile logfile
+    listen-address  10.0.154.165:1087
+    keep-alive-timeout 5
+    tolerate-pipelining 1
+    socket-timeout 300
+    forward-socks5 / 127.0.0.1:1084 .
+    ```
+
+
+`sudo vim /etc/systemd/system/privoxy-ss.service`
+```
+[Unit]
+Description=Tranfrom socks5 proxy to http proxy using privoxy
+Documentation=man:privoxy(8) 
+Documentation=https://www.privoxy.org/user-manual/
+After=network.target
+Wants=haproxy-ss.service
+
+[Service]
+ExecStart=/usr/sbin/privoxy --no-daemon --pidfile /var/run/privoxy-ss.pid --user privoxy /etc/privoxy/shadowsocks.config 
+ExecStopPost=/bin/rm -f /var/run/privoxy-ss.pid
+
+[Install]
+WantedBy=multi-user.target
+```
+
+
+```bash
+sudo systemctl disable privoxy
+
+sudo systemctl enable privoxy-ss
+sudo systemctl start privoxy-ss
+sudo systemctl status privoxy-ss
+```
+
+## systemd
+
+use `sslocal` instead of `sserver` and add `User=nobody` for client
+
+`/usr/bin/` instead of `/usr/local/bin/` for CentOS
+
+`sudo vim /etc/systemd/system/shadowsocks-ipv4.service`
+```
+[Unit]
+Description=Shadowsocks client ipv4
+
+[Service]
+ExecStart=/usr/local/bin/ssserver -c /etc/shadowsocks/ipv4.json
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+sudo systemctl enable shadowsocks-ipv*
+sudo systemctl start  shadowsocks-ipv*
+sudo systemctl status shadowsocks-ipv*
+```
+
+## optimize
+
+### kernel optimization
+
+For server
+
+```bash
+sysctl net.ipv4.tcp_available_congestion_control
+sudo vim /etc/modules-load.d/modules.conf  # add tcp_hybla
+```
+
+`sudo vim /etc/sysctl.d/local.conf`
+```
+# max open files
+fs.file-max = 51200
+# max read buffer
+net.core.rmem_max = 67108864
+# max write buffer
+net.core.wmem_max = 67108864
+# default read buffer
+net.core.rmem_default = 65536
+# default write buffer
+net.core.wmem_default = 65536
+# max processor input queue
+net.core.netdev_max_backlog = 4096
+# max backlog
+net.core.somaxconn = 4096
+
+# resist SYN flood attacks
+net.ipv4.tcp_syncookies = 1
+# reuse timewait sockets when safe
+net.ipv4.tcp_tw_reuse = 1
+# turn off fast timewait sockets recycling
+net.ipv4.tcp_tw_recycle = 0
+# short FIN timeout
+net.ipv4.tcp_fin_timeout = 30
+# short keepalive time
+net.ipv4.tcp_keepalive_time = 1200
+# outbound port range
+net.ipv4.ip_local_port_range = 10000 65000
+# max SYN backlog
+net.ipv4.tcp_max_syn_backlog = 4096
+# max timewait sockets held by system simultaneously
+net.ipv4.tcp_max_tw_buckets = 5000
+# TCP receive buffer
+net.ipv4.tcp_rmem = 4096 87380 67108864
+# TCP write buffer
+net.ipv4.tcp_wmem = 4096 65536 67108864
+# turn on path MTU discovery
+net.ipv4.tcp_mtu_probing = 1
+
+# for high-latency network
+net.ipv4.tcp_congestion_control = hybla
+
+# for low-latency network, use cubic instead
+# net.ipv4.tcp_congestion_control = cubic
+``` 
+
+```bash 
+sudo sysctl --system
+```
+https://github.com/shadowsocks/shadowsocks/wiki/Optimizing-Shadowsocks
+
+> By using the sysctl config above, you are trading off RAM for speed. If you want to use less RAM, reduce the size of rmem and wmem.
+
+Actually, there are only few free memory left on my VPS. So if you turn on this feature, you vps can hardly do anything else.
+
+### ulimit
+
+https://shadowsocks.org/en/config/advanced.html
+
+## browser
+
+1. Firefox
+
+    - entension: FoxProxy Standard
+    - Proxies -> Add New Proxy -> Manual ... -> IP, port, check SOCKS proxy?, check SOCKS v5
+    - Pattern Subscriptions -> http://firefoxfan.org/gfwlist/gfwlist.txt -> **Add Proxies** -> Refresh Now -> AutoProxy, Base64
+    - Use proxies based on .....
+
+1. Chrome
+
+    [SwitchyOmega](https://github.com/FelisCatus/SwitchyOmega/wiki/GFWList)
+
+## 用 Supervisor 管理
+
+    ````bash
+    sudo apt -y install supervisor
+    ```
+
+    `vim /etc/supervisor/conf.d/supervisord.conf`
+    ```
+    [program:shadowsock-ipv4]
+    command=ssserver -c /etc/shadowsocks/ipv4.json  
+    autostart=true
+    autorestart=true  
+    user=root  
+    ```
+
+    ```bash
+    supervisorctl reload
+    supervisorctl status
+    
+    # debug
+    supervisorctl tail -f shadowsocks stderr
+    
+    # for shadowsock
+    vim /etc/default/supervisor # add ulimit -n 51200 
+    ```
+  
+    

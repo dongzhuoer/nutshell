@@ -1,0 +1,106 @@
+
+
+
+
+# Bash
+
+其实你应该把 bash 理解成一个跟桌面系统一样强大的程序。
+
+
+
+
+
+## terminal
+
+
+
+### shortcut
+
+|          |                     |
+|:--------:|---------------------|
+| ctrl+a/e | go to begin/end     |
+| ctrl+u/k | delete to begin/end |
+  : move cursor
+
+|              |       |
+|:------------:|-------|
+|  ctrl+insert | copy  |
+| shift+insert | paste |
+  : copy & paste
+
+|            |                     |
+|:----------:|---------------------|
+|   ctrl+r   | search backward     |
+|   ctrl+s   | search forward      |
+| left/right | select current line |
+|    enter   | excute current line |
+  : search history
+
+
+
+### setting
+
+- disable XON/XOFF to avoid conflict with search forward 
+
+```bash
+stty -ixon	# you can put it into ~/.bashrc
+```
+
+
+
+
+
+
+## job control
+
+We will use `find /` as example since it runs for a long time.
+
+
+### manipulate job
+
+- `fg %n` brings a job into the foreground
+- `bg %n` restarts a suspended background job
+- `jobs` lists jobs in the background
+- `kill -9 %n` terminates a job
+
+其中，`n` 是 job nubmer. [more ways to specify a job](http://tldp.org/LDP/abs/html/x9644.html#JOBIDTABLE).
+
+`fg`, `bg` 直接使用时，默认为当前 job。
+
+
+
+### run in background
+
+The are basically two ways:
+
+1. Add `&` to the end of a command.
+1. Run a command, press `C-z` to suspend and throw to the background, then `bg`.
+
+
+
+
+
+
+## shell
+
+
+
+### use `\t` in regexp
+
+```bash
+cat filename | sed -nE $'/pattern\t/p' 
+cat filename | sed -nE '/pattern'$'\t''/p' # same as above
+```
+
+
+
+### array
+
+1. `array` returns the first element, the same as `array[0]`
+1. `@` or `*` means to get all elements of a array: `${array[@]}` or `${array[*]}` 
+1. `#` means get element number
+   - `${#array[@]}` returns array length
+   - `${#array}` returns the length of the first element
+
+
+

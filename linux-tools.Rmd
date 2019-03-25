@@ -1,0 +1,113 @@
+# Linux tools
+
+- `which`
+- `whatis` 
+- `apropos`
+- `type`
+
+
+
+
+
+
+## Git
+
+
+
+### clean 
+
+The best way is to delete the folder and clone again.
+
+- clean changes & files
+
+```bash
+git reset --hard	# revert all modified files.
+
+git clean -fd		# remove all untracked files and directories.
+```
+
+- untrack files
+
+```bash
+git rm --cached path/to/file
+git update-index --assume-unchanged path/to/file
+```
+
+- remove big files
+
+```bash
+git-rm-big path/to/file
+```
+
+- GC
+
+```bash
+git gc --aggressive --prune=all
+```
+
+
+
+### config, alias
+
+- config
+
+```bash
+git config --global user.name "Zhuoer Dong"
+```
+
+`--global` means `~/.gitconfig`
+
+```
+[user]
+	name = Zhuoer Dong
+```
+
+
+
+- print alias
+
+```bash
+$git help co
+'co' is aliased to 'checkout'
+```
+
+
+
+
+
+
+## Vim 
+
+
+
+### insert output of a command
+
+Press ':' in command mode would switch to command-line mode, then you can use `!command` to execute the command you want, such as `!ls`.
+
+However, if you _don't_ press ':', but _directly_ press `!*command` ^[`*` means any normal key, for example, if you type `!als`, the command to execute will be `ls`] instead, the output of the command will be _inserted_ into the current document and _replace_ the current line.
+
+
+
+### copy and paste
+
+- paste as is
+
+```
+set paste
+```
+
+- copy to clipboard ^[may need install `vim-gui-common`]
+
+```
+set clipboard=unnamedplus
+```
+
+
+
+
+
+
+
+
+
+

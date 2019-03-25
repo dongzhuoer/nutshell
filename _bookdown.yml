@@ -3,7 +3,7 @@ output_dir: gitbook
 delete_merged_file: yes
 new_session: yes
 edit: https://github.com/dongzhuoer/nutshell/edit/master/%s
-before_chapter_script: _common.R
+#before_chapter_script: _common.R
 rmd_files:
   - index.Rmd
   - r.Rmd
@@ -15,8 +15,10 @@ rmd_files:
   - rcpp.Rmd
   - yaml.Rmd
   - linux-management.Rmd
-  - git.Rmd
+  - linux-tools.Rmd
+  - bash.Rmd
   - docker.Rmd
   - travis.Rmd
   - software.Rmd
+  - shadowsocks.Rmd
 

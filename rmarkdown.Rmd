@@ -67,9 +67,9 @@ options(width = 100)
 ### good example
 
 - `06.junior spring/科研训练Ⅰ`: source `.Rmd`, output `.html`, code for generating figures of a research project
-- `research/xparis`: multiple output format for different usage
 - `07.senior autumn/生物科学综合实验`: 生成 Word 版论文，这里还是事后进行修改，提供模板会好很多
-
+- `research/xparis`: multiple output format for different usage
+- `research/lulab-rotation-summary`: render and preview multiple .Rmd files using VSCode Tasks
 
 
 ### Date

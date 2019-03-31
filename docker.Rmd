@@ -9,10 +9,12 @@
 
 > Windows 10 need Pro version, so we only talk about Ubuntu here.
 
-DONOT follow the official guide ^[the network is awfully terrible], rather, directly download `.deb` ^[recently Docker has been splitted into three `.deb`, you needn't care the order, just use `gdebi` and install missing dependency] from <https://mirrors4.tuna.tsinghua.edu.cn/docker-ce/linux/ubuntu/dists/bionic/pool/stable/amd64/>
+```bash
+sudo apt -y install docker.io
+```
 
 
-then you need to add your acount into `docker` group
+Then you need to add your acount into `docker` group
 
 ```bash
 ## you may need to relogin to let it effect

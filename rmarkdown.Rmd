@@ -110,6 +110,8 @@ if (length(bioc_pkg) > 0)   BiocManager::install(bioc_pkg)
 github_pkg <- c(paristools = 'dongzhuoer/paristools')
 github_pkg <- github_pkg[setdiff( names(github_pkg), .packages(T) )]
 if (length(github_pkg) > 0) remotes::install_github(github_pkg)
+# if only a few
+# if(!'rGEO' %in% .packages(T)) remotes::install_github('dongzhuoer/rGEO')
 ```
 ````
 

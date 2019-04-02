@@ -33,5 +33,19 @@ knitr::opts_chunk$set(collapse = T, error = T, cache = T)
 
 # preface {-}
 
-Zhuoer Dong's summary of programming experience
+编程、软件和操作系统的各种作死记录,作得多了也就积累了一些经验，看得懂的人可以参考，看不懂的人欢迎到 GitHub Issues 里提问（顺便 Star 一下）。
+
+这本书经历过很多起落，最初源自大三暑假时想整理一下积累的编程知识，以便自己查阅，那时名为《那些年走过的坑》。It also has an English name, _A book about basics of programming_, and a funny perface:
+
+> 地球人都知道，重装系统（包括各种软件和配置），尤其是 Windows系统，非常地麻烦。于是有一些人尽量避免重装系统，还有一些人则让自己的系统重装起来尽可能简单。  
+> 在程序员中，有些人努力让自己像电脑一样思考，还有一些人则希望电脑能像人一样思考。  
+> 如果以上两条你都属于后者，那么本书应该对你很有帮助。
+
+最后附一下从 [R语言忍者秘笈](https://github.com/yihui/r-ninja) 改编过来的版权声明：
+
+本库中所有内容遵守[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)和AGPL-3.0混合协议，请君自重，别没事儿拿去传个什么新浪爱问百度文库以及XX经济论坛。有问题欢迎到Issues里面报告。如果你觉得任何内容侵犯了你的著作权，请随时联系[我](dongzhuoer@mail.nankai.edu.cn)，我会尽快处理。
+
+
+
+
 

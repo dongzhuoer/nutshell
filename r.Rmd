@@ -13,7 +13,7 @@
 
 - export Excel: `writexl::write_xlsx()`
 - `match.arg()`
-- `cat("\014") ` clear console
+- `ctrl+l` clear console
 - `remotes::package_deps(.packages(T)) %>% tibble::as_tibble()`
 
 

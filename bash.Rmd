@@ -94,6 +94,27 @@ cat filename | sed -nE '/pattern'$'\t''/p' # same as above
 
 
 
+### function
+
+1. passing parameters
+
+```{bash}
+bar() {
+    echo -e $1 '\t' $2
+}
+foo1 () {
+    bar "$*"
+}
+foo2 () {
+    bar "$@"
+}
+
+foo1 hello world
+foo2 hello world
+```
+
+
+
 ### array
 
 1. `array` returns the first element, the same as `array[0]`

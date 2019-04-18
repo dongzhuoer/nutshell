@@ -1,4 +1,5 @@
 # cache & env->global fields are customizable
+dist: xenial
 language: generic
 service: docker
 git:

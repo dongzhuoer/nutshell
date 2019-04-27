@@ -22,6 +22,7 @@
 ```bash
 uname -r                       # kernel version
 lsb_release -cs                # Ubuntu version
+cat /etc/issue
 cat /etc/debian_version        # Debian version
 ```
 

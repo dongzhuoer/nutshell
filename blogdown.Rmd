@@ -53,6 +53,7 @@ In the first form, the text in between are treated as markdown. Ironically, it's
 ### Tips
 
 - after you rename a `.Rmd` file, remember to clean the old `.html` file (especially when you move `.Rmd`, otherwise there would be two post with same title and _slug_)
+- 以前用 RStudio 时，想用浏览器而不是Viewer panel 预览。鼓捣半天 `options()` 之后，发现 RStudio 会逗逼地 check if the browser can open http://www.rstuio.com, so `utils::assignInNamespace('get_browser', function() {getOption('browser')}, 'servr')`
 
 
 

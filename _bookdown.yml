@@ -13,6 +13,8 @@ rmd_files:
   - blogdown.Rmd
   - r-packages.Rmd
   - rcpp.Rmd
+  - cpp.Rmd
+  - python.Rmd
   - yaml.Rmd
   - linux-management.Rmd
   - linux-tools.Rmd

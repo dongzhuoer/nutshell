@@ -1,0 +1,20 @@
+# Python
+
+
+
+
+
+
+## basic
+
+- numpy nice print
+
+```python
+np.set_printoptions(suppress=True, precision=3)
+```
+
+- check for PEP 8 compliance
+
+```
+py.test --pep8 main.py
+```

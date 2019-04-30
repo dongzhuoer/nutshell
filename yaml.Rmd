@@ -1,5 +1,3 @@
-# (PART) other language {-}
-
 # YAML, etc
 
 This chapter aims to include simple language, althought currently only include YAML

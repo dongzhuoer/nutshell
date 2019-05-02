@@ -13,8 +13,8 @@
 ### template
 
 ```yaml
-language: generic
 dist: xenial
+language: minimal
 git:
   depth: false
   submodules: false

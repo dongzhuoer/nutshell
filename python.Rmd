@@ -7,6 +7,21 @@
 
 ## basic
 
+
+
+### setting
+
+```{bash}
+python3       -E -c 'import sys; print(sys.path)'
+python3    -s -E -c 'import sys; print(sys.path)'
+python3 -S -s -E -c 'import sys; print(sys.path)'
+```
+
+
+
+
+### tips
+
 - numpy nice print
 
 ```python

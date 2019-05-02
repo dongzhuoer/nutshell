@@ -97,21 +97,10 @@ rendered on `r '\x60r Sys.Date()\x60'`
 - avoid silently installing packages on others' computer, while myself just need to render the `.Rmd`
 
 ````markdown
-`r ''````{r install-pkg, message=FALSE, eval=getOption('zhuoer.auto.install.package', F)}
+`r ''````{r install-pkg, message=FALSE, eval=Sys.getenv('CI') == 'true'}
 ## install needed R packages
-cran_pkg <- c('magrittr', 'tidyverse', 'BiocManager', 'remotes')
-cran_pkg <- setdiff(cran_pkg, .packages(T))
-if (length(cran_pkg) > 0)   install.packages(cran_pkg)
-
-bioc_pkg <- c('ggtree')
-bioc_pkg <- setdiff(bioc_pkg, .packages(T))
-if (length(bioc_pkg) > 0)   BiocManager::install(bioc_pkg)
-
-github_pkg <- c(paristools = 'dongzhuoer/paristools')
-github_pkg <- github_pkg[setdiff( names(github_pkg), .packages(T) )]
-if (length(github_pkg) > 0) remotes::install_github(github_pkg)
-# if only a few
-# if(!'rGEO' %in% .packages(T)) remotes::install_github('dongzhuoer/rGEO')
+remotes::update_packages(c('magrittr', 'tidyverse'))
+remotes::install_bioc(c('ggtree'))remotes::install_github(c('dongzhuoer/libzhuoer'))
 ```
 ````
 

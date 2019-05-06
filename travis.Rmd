@@ -73,6 +73,14 @@ RUN apt update && apt -y install wget gdebi-core \
 
 
 
+### avoid log exceeding 4M
+
+General strategy is to find the cause, then solve it.
+
+Take R packages for example, one can search `*source*`, and examine right panel, big space between highlight indicate a verbose package; the left thing is quiet easy, `quiet = TRUE`.
+
+
+
 
 
 

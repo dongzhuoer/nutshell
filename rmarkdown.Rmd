@@ -99,8 +99,9 @@ rendered on `r '\x60r Sys.Date()\x60'`
 ````markdown
 `r ''````{r install-pkg, message=FALSE, eval=Sys.getenv('CI') == 'true'}
 ## install needed R packages
-remotes::update_packages(c('magrittr', 'tidyverse'))
-remotes::install_bioc(c('ggtree'))remotes::install_github(c('dongzhuoer/libzhuoer'))
+remotes::update_packages(c('magrittr', 'tidyverse', 'BiocManager'), upgrade = TRUE)
+BiocManager::install(c('ggtree'), ask = FALSE)
+remotes::install_github(c('dongzhuoer/libzhuoer'))
 ```
 ````
 

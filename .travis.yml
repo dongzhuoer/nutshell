@@ -10,15 +10,13 @@ env:
   global: 
     # general
     - input_git=$TRAVIS_BUILD_DIR
-    - repo_git=https://gitlab-ci-token:$GITLAB_TOEKN@gitlab.com/dongzhuoer/nutshell.gitbook.git
-    - repo_branch=master
-    - work_dir=$TRAVIS_BUILD_DIR/..
+    - repo_git="-b zhuoer-nutshell https://$GITHUB_PAT@github.com/dongzhuoer/bookdown.dongzhuoer.com.git"
     - system_dep=""   
-    - install_pkg="Sys.setenv('GITHUB_PAT' = '$GITHUB_PAT'); remotes::update_packages(c('magrittr', 'tidyverse', 'cowplot', 'testthat', 'plyr', 'gridExtra', 'nutshell', 'learningr', 'lattice'))"
+    - install_pkg="remotes::update_packages(c('magrittr', 'tidyverse', 'cowplot', 'testthat', 'plyr', 'gridExtra', 'nutshell', 'learningr', 'lattice'))"
     - render_args=""
     - zhuoerdown=false
 
-script: wget https://raw.githubusercontent.com/dongzhuoer/build-bookdown-demo/master/build.sh && bash build.sh
+script: wget https://raw.githubusercontent.com/dongzhuoer/zhuoerdown/master/inst/travis-script.sh && bash travis-script.sh
 
 notifications:
   email: false

@@ -1,4 +1,3 @@
-# cache & env->global fields are customizable
 dist: xenial
 language: minimal
 git:
@@ -6,17 +5,16 @@ git:
   submodules: false
 cache: 
   directories: [$TRAVIS_BUILD_DIR/_bookdown_files/, $HOME/.local/lib/R/]
-env:
-  global: 
-    # general
-    - input_git=$TRAVIS_BUILD_DIR
-    - repo_git="-b zhuoer-nutshell https://$GITHUB_PAT@github.com/dongzhuoer/bookdown.dongzhuoer.com.git"
-    - system_dep=""   
-    - install_pkg="remotes::update_packages(c('magrittr', 'tidyverse', 'cowplot', 'testthat', 'plyr', 'gridExtra', 'nutshell', 'learningr', 'lattice'))"
-    - render_args=""
-    - zhuoerdown=false
 
-script: wget https://raw.githubusercontent.com/dongzhuoer/zhuoerdown/master/inst/travis-script.sh && bash travis-script.sh
+script: 
+  - export input_git=$TRAVIS_BUILD_DIR
+  - export repo_git="-b zhuoer-nutshell https://$GITHUB_PAT@github.com/dongzhuoer/bookdown.dongzhuoer.com.git"
+  - export rmd_dir=""
+  - export system_dep=""   
+  - export install_pkg="remotes::update_packages(c('magrittr', 'tidyverse', 'cowplot', 'testthat', 'plyr', 'gridExtra', 'nutshell', 'learningr', 'lattice'))"
+  - export render_args=""
+  - export zhuoerdown=false
+  - wget https://raw.githubusercontent.com/dongzhuoer/zhuoerdown/master/inst/travis-script.sh && bash travis-script.sh
 
 notifications:
   email: false

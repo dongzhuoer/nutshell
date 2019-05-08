@@ -208,5 +208,39 @@ I have included a few convenient tasks for VSCode.
 
 
 
+## Rcpp {#rcpp-in-package} 
 
 
+
+### set up
+
+1. create a package (copy `minir`)
+1. `usethis::use_rcpp()`
+1. create a `.cpp` file in `src/`
+1. set up appropriate ^[You should make it as portable as possible. For example, `CXX = clang++` is a bad idea here, since others may haven't install it and your code shouldn't depend on certain complier] `src/Makevars`, like: 
+   ```
+   PKG_CXXFLAGS = -std=c++17
+   ```
+1. add to `zzz.R`
+   ```r
+   .onUnload <- function (libpath) {
+     library.dynam.unload("mypackage", libpath)
+   }
+   ```
+
+
+
+### exporting & importing C++ code
+
+refer to [here](https://bookdown.dongzhuoer.com/zhuoer/r-pkgs-revised/cpp.html#cpp-export)
+
+If you want to export some header files, put them into `inst/include`, [example](https://github.com/dongzhuoer/Rcppzhuoer/tree/master/inst/include)
+
+In rapidly development, you may add or remove `// [[Rcpp::interfaces(r, cpp)]]` in a `.cpp`, then you should use `Load All` since `Build` or `Document` would fail.
+
+
+
+### best practice
+
+1. use `Build` or `Load All` intead of sourcing individual `.cpp` file. ^[Actually, writing a pakcage is the standard solution when you want to use more than one `.cpp` file.]
+1. `.cpp` file in a package shouldn't contain `// [[Rcpp::plugins(cpp17)]]`, that's the job of `src/Makevars`

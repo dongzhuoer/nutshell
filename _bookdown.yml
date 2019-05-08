@@ -10,7 +10,6 @@ rmd_files:
   - r-plot.Rmd
   - rmarkdown.Rmd
   - r-packages.Rmd
-  - rcpp.Rmd
   - cpp.Rmd
   - python.Rmd
   - yaml.Rmd

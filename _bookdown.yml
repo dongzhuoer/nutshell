@@ -9,8 +9,6 @@ rmd_files:
   - r.Rmd
   - r-plot.Rmd
   - rmarkdown.Rmd
-  - bookdown.Rmd
-  - blogdown.Rmd
   - r-packages.Rmd
   - rcpp.Rmd
   - cpp.Rmd

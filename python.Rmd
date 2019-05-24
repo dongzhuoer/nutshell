@@ -33,3 +33,19 @@ np.set_printoptions(suppress=True, precision=3)
 ```
 py.test --pep8 main.py
 ```
+
+
+
+
+
+
+## Pytorch
+
+- cuda runtime error (30)
+
+```bash
+sudo rmmod nvidia_uvm
+sudo rmmod nvidia
+sudo modprobe nvidia
+sudo modprobe nvidia_uvm
+```

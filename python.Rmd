@@ -9,6 +9,18 @@
 
 
 
+### import
+
+```python
+# matplotlib is also avaliable
+import matplotlib.pyplot 
+
+# you can only use matplotlib.pyplot, i.e., plt
+import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt
+```
+
+
 ### setting
 
 ```{bash}
@@ -22,17 +34,13 @@ python3 -S -s -E -c 'import sys; print(sys.path)'
 
 ### tips
 
-- numpy nice print
-
-```python
-np.set_printoptions(suppress=True, precision=3)
-```
-
 - check for PEP 8 compliance
 
 ```
 py.test --pep8 main.py
 ```
+
+- `matplotlib.pyplot.ion()` haves the advantages of working _outside_ of IPython as well
 
 
 
@@ -41,11 +49,9 @@ py.test --pep8 main.py
 
 ## Pytorch
 
-- cuda runtime error (30)
+- cuda error
 
 ```bash
 sudo rmmod nvidia_uvm
-sudo rmmod nvidia
-sudo modprobe nvidia
 sudo modprobe nvidia_uvm
 ```

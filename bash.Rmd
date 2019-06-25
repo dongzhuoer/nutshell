@@ -46,7 +46,7 @@
 stty -ixon	# you can put it into ~/.bashrc
 ```
 
-
+- when your cursor disappear, `echo -en "\e[?25h"`
 
 
 

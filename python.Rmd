@@ -55,3 +55,10 @@ py.test --pep8 main.py
 sudo rmmod nvidia_uvm
 sudo modprobe nvidia_uvm
 ```
+
+if `rmmod: ERROR: Module nvidia_uvm is in use`, 
+
+```
+lsof 2> /dev/null | grep nvidia.uvm
+# then kill the process
+```

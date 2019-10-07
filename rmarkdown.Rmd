@@ -288,26 +288,3 @@ hugo --themesDir ../../ -t theme-name
 ```
 
 
-
-### tranquilpeak-theme
-
-> 这个 theme 最吸引我的是 category 页面，但随着 nutshell 和 memoir 的独立，也该换个好看的 theme了。blogdown 最棒的是重心在 markdown，输出格式可以随便换。
-
-[user doc](https://github.com/kakawait/hugo-tranquilpeak-theme/blob/master/docs/user.md)
-
-1. only files under `content/post/` directory is categoried ^[you may search `where .Data.Pages "Type" "post"`]
-1. multiple categories will be treated as hierarchy.
-1. tag and category must be vector (maybe a bug)
-
-    error
-
-    ```yaml
-    tags: foobar
-    ```
-
-    right
-
-    ```yaml
-    tags: 
-      - foobar
-    ```

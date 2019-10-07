@@ -48,7 +48,7 @@ ggplot(mtcars, aes(wt, mpg)) +
 we use `cowplot::plot_grid()` as reference
 
 - for **gtable**, `rbind()` & `cbind()` just align plots, and you have to use `ggplotGrob()` to convert ggplot object, [example](https://cran.r-project.org/web/packages/egg/vignettes/Ecosystem.html#cb5)
-- for **egg**, `ggarrange()` doesn't provide more feature, but some figure explains how to align panels: [one](https://github.com/baptiste/egg#aligning-complex-ggplots) & [another](https://github.com/jwdink/egg#aligning-complex-ggplots) ^[there are two GitHub repo, the former releases to CRAN]
+- for **egg**, `ggarrange()` doesn't provide more feature, but some figure explains how to align panels: [one](https://cran.r-project.org/web/packages/egg/vignettes/Overview.html#aligning-complex-ggplots) & [another](https://github.com/jwdink/egg#aligning-complex-ggplots) ^[there are two GitHub repo, the former releases to CRAN]
 - for **gridExtra**, `grid.arrange()` can't add label, and syntax for layout is more complex. But can add title, contain hole, nest and multi-page [vignette](https://cran.r-project.org/web/packages/gridExtra/vignettes/arrangeGrob.html)
 
 - **patchwork** provides a nice `+` syntax, but it remains to see whether I have to `library()` it, [home](https://github.com/thomasp85/patchwork)

@@ -11,6 +11,8 @@
 
 - `Select`: Quick and Simple Text Selection，press twice to select outer.
 
+
+
 ### Ctrl
 
 |                      |                      |                 |                     |                 |                  |                   |
@@ -76,6 +78,30 @@
 | `shift+alt+drag`   | Column Selection         |
 | `alt+drag`         | Multiple cursor          |
   : other  shortcut
+
+
+
+
+
+
+## fcitx in Qt
+
+最初是 RStudio 不支持搜狗拼音，后来发现 Spyder 也不行。
+
+> On Linux, RStudio uses a bundled version of Qt 5 that does not include support for Fctix by default. To resolve the problem, you can add Fctix's Qt 5 plugin from your system's Qt 5 installation to RStudio's platform input plugin folder.
+> 
+> --- https://support.rstudio.com/hc/en-us/articles/205605748
+
+- Support Sogou Pinyin
+
+```bash
+sudo apt -y install fcitx-frontend-qt5
+# RStudio
+sudo cp -t /usr/lib/rstudio/plugins/platforminputcontexts /usr/lib/x86_64-linux-gnu/qt5/plugins/platforminputcontexts/libfcitxplatforminputcontextplugin.so
+# Spyder by pip
+cp -t /path/to/site-packages/PyQt5/Qt/plugins/platforminputcontexts /usr/lib/x86_64-linux-gnu/qt5/plugins/platforminputcontexts/libfcitxplatforminputcontextplugin.so
+```
+
 
 
 

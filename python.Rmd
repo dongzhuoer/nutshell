@@ -43,6 +43,9 @@ py.test --pep8 main.py
 - `matplotlib.pyplot.ion()` haves the advantages of working _outside_ of IPython as well
 
 
+## lessons from hours
+
+- `__metaclass__` is ignored in Python3 (Python2 supports it)
 
 
 

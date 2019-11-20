@@ -48,6 +48,15 @@ sudo blkid
 lsblk # -f
 ```
 
+- port
+
+```bash
+# IPv4/6, 22 instead of ssh, 127.0.0.1 instead of localhost
+sudo lsof -i -P -n | grep LISTEN 
+# tcp, udp, listen, show process, 22 instead of ssh 
+ss -tulpn
+netstat -tulpn
+```
 
 
 ### maintain system
@@ -135,7 +144,7 @@ lsar
 
 ```bash
 gzip filename           # make `filename.gz`, delete `filename`
-gip -k filename         # keep original file
+gzip -k filename         # keep original file
 gzip -f filename.gz     #  `-f` force compressing file ended with `.gz`
 gzip -t filename.gz     # check integrity
 gzip filename -c > filename.gz

@@ -49,6 +49,11 @@ py.test --pep8 main.py
 
 
 
+## Spyder
+
+Spyder project must have `.spyproject` folder. I suggest add `.spyproject/encoding.ini` to Git since it's quiet stable.
+
+
 
 ## Pytorch
 

@@ -35,6 +35,11 @@ grep 'core id'     /proc/cpuinfo | sort -u | wc -l  # cores per processors
 grep 'processor'   /proc/cpuinfo | sort -u | wc -l  # threads
 ```
 
+- other hardware
+
+```bash
+ifconfig  # network interface 
+```
 
 
 ### monitor system
@@ -56,6 +61,13 @@ sudo lsof -i -P -n | grep LISTEN
 # tcp, udp, listen, show process, 22 instead of ssh 
 ss -tulpn
 netstat -tulpn
+```
+
+- network
+
+```bash
+sudo iftop -P
+sudo tcptrack -i wlp2s0  # port 1080
 ```
 
 

@@ -13,7 +13,7 @@
 ### template
 
 ```yaml
-dist: xenial
+dist: bionic
 language: minimal
 git:
   depth: false

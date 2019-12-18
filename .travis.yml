@@ -1,5 +1,5 @@
 # I use global env to facilitate debug, since they exist as soon as you enter the shell
-dist: xenial
+dist: bionic
 language: minimal
 git:
   depth: false

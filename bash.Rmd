@@ -6,6 +6,8 @@
 
 其实你应该把 bash 理解成一个跟桌面系统一样强大的程序。
 
+[Reference Manual](https://www.gnu.org/software/bash/manual/html_node/index.html)
+
 
 
 

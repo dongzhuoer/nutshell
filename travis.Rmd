@@ -108,7 +108,7 @@ We abstract the follwing structure:
 ### `.travis.yml`
 
 ```yaml
-language: generic
+language: minimal
 git:
   depth: false
 env:

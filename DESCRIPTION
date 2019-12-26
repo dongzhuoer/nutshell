@@ -1,0 +1,8 @@
+Package: dongzhuoer.nutshell
+Type: Book
+Title: Programming in a nutshell
+Version: 0.0.1
+Imports: 
+    nutshell,
+    nutshell.bbdb,
+    nutshell.audioscrobbler

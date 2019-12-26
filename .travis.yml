@@ -5,18 +5,21 @@ git:
   depth: false
   submodules: false
 cache: 
-  directories: [$TRAVIS_BUILD_DIR/_bookdown_files/, $HOME/.local/lib/R/]
-env:
-  global: 
-    - input_git=$TRAVIS_BUILD_DIR
-    - repo_git="-b zhuoer-nutshell https://$GITHUB_PAT@github.com/dongzhuoer/bookdown.dongzhuoer.com.git"
-    - rmd_dir=.
-    - root_command=""   
-    - user_command=""
-    - install_pkg="remotes::update_packages(c('magrittr', 'tidyverse', 'cowplot', 'testthat', 'plyr', 'gridExtra', 'nutshell', 'learningr', 'lattice'))"
-    - render_args=""
-    - zhuoerdown=false
-script: wget https://raw.githubusercontent.com/dongzhuoer/zhuoerdown/master/inst/travis-script.sh && bash travis-script.sh
-
+  directories: [$TRAVIS_BUILD_DIR/static/post, $HOME/.local/lib/R/site-library]
 notifications:
   email: false
+
+script: 
+  - docker run -dt --name rlang0 -w /root -v $HOME/.local/lib/R/site-library:/usr/local/lib/R/site-library dongzhuoer/rlang:zhuoerdown 2> /dev/null
+  - docker exec rlang0 bash -c 'echo -e "[user]\n\tname = Zhuoer Dong\n\temail = dongzhuoer@mail.nankai.edu.cn\n" > .gitconfig'
+  - docker cp ./. rlang0:/root
+  - docker exec rlang0 Rscript -e "remotes::install_local(force = TRUE)"
+  - docker exec rlang0 Rscript -e "bookdown::render_book('', output_dir = '/output')"
+  - docker exec rlang0 test -f /output/index.html || exit 1
+  - docker exec rlang0 git clone --depth 1 -b dongzhuoer/nutshell https://$GITHUB_PAT@github.com/dongzhuoer/bookdown.dongzhuoer.com.git /git 
+  - docker exec rlang0 mv /git/.git /output
+  - docker exec rlang0 rm -rf /git
+  - docker exec -w /output rlang0 git add --all
+  - docker exec -w /output rlang0 git commit -m "Travis build at `date '+%Y-%m-%d %H:%M:%S'`" --allow-empty 
+  - docker exec -w /output rlang0 git push
+  - docker exec rlang0 chown -R `id -u`:`id -g` /usr/local/lib/R/site-library

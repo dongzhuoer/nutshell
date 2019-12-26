@@ -2,6 +2,10 @@
 
 Programming in a nutshell
 
+```r
+remotes::install_local()
+```
+
 
 -----------------------
 

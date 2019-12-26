@@ -3,6 +3,16 @@ Type: Book
 Title: Programming in a nutshell
 Version: 0.0.1
 Imports: 
+    ggplot2,
+    cowplot,
+    plyr,
+    rlang,
+    purrr,
+    forcats,
+    tibble,
+    Hmisc,
+    yaml,
+    testthat,
     nutshell,
     nutshell.bbdb,
     nutshell.audioscrobbler

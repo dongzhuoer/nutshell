@@ -6,9 +6,6 @@ git:
   submodules: false
 cache: 
   directories: [$TRAVIS_BUILD_DIR/static/post, $HOME/.local/lib/R/site-library]
-notifications:
-  email: false
-
 script: 
   - docker run -dt --name rlang0 -w /root -v $HOME/.local/lib/R/site-library:/usr/local/lib/R/site-library dongzhuoer/rlang:zhuoerdown 2> /dev/null
   - docker exec rlang0 bash -c 'echo -e "[user]\n\tname = Zhuoer Dong\n\temail = dongzhuoer@mail.nankai.edu.cn\n" > .gitconfig'

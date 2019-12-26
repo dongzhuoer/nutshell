@@ -23,3 +23,4 @@ script:
   - docker exec -w /output rlang0 git commit -m "Travis build at `date '+%Y-%m-%d %H:%M:%S'`" --allow-empty 
   - docker exec -w /output rlang0 git push
   - docker exec rlang0 chown -R `id -u`:`id -g` /usr/local/lib/R/site-library
+  - wget https://github.com/dongzhuoer/autobookdown/raw/master/trigger.sh && bash -x trigger.sh

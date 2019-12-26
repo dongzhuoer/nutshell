@@ -15,4 +15,4 @@ knitr::opts_chunk$set(
 )
 
 options(dplyr.print_max = 10)
-
+library(magrittr)

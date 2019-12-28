@@ -1,9 +1,5 @@
-# I use global env to facilitate debug, since they exist as soon as you enter the shell
 dist: bionic
 language: minimal
-git:
-  depth: false
-  submodules: false
 cache: 
   directories: [$TRAVIS_BUILD_DIR/static/post, $HOME/.local/lib/R/site-library]
 script: 
@@ -13,11 +9,11 @@ script:
   - docker exec rlang0 Rscript -e "remotes::install_local(force = TRUE)"
   - docker exec rlang0 Rscript -e "bookdown::render_book('', output_dir = '/output')"
   - docker exec rlang0 test -f /output/index.html || exit 1
-  - docker exec rlang0 git clone --depth 1 -b dongzhuoer/nutshell https://$GITHUB_PAT@github.com/dongzhuoer/bookdown.dongzhuoer.com.git /git 
+  - docker exec rlang0 git clone --depth 1 -b dongzhuoer/nutshell https://gitlab-ci-token:$GITLAB_TOKEN@gitlab.com/dongzhuoer/bookdown.dongzhuoer.com.git /git 
   - docker exec rlang0 mv /git/.git /output
   - docker exec rlang0 rm -rf /git
   - docker exec -w /output rlang0 git add --all
   - docker exec -w /output rlang0 git commit -m "Travis build at `date '+%Y-%m-%d %H:%M:%S'`" --allow-empty 
   - docker exec -w /output rlang0 git push
   - docker exec rlang0 chown -R `id -u`:`id -g` /usr/local/lib/R/site-library
-  - wget https://github.com/dongzhuoer/autobookdown/raw/master/trigger.sh && bash -x trigger.sh
+  - wget https://github.com/dongzhuoer/build-website/raw/master/trigger.sh && bash -x trigger.sh bookdown

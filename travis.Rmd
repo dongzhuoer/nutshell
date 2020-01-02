@@ -130,7 +130,7 @@ script:
   - echo 'build'
   # deploy to remote Git
   - git clone --depth 1 -b $repo_branch $repo_git $work_dir/repo && mv $work_dir/repo/.git $work_dir/output
-  - cd $work_dir/output && git add --all && git commit -m "travis build at `date '+%Y-%m-%d %H:%M:%S'`" --allow-empty && git push -f
+  - cd $work_dir/output && git rm -r --cached . && git add --all && git commit -m "travis build at `date '+%Y-%m-%d %H:%M:%S'`" --allow-empty && git push -f
 
 notifications:
   email: false

@@ -4,6 +4,7 @@ Title: Programming in a nutshell
 Version: 0.0.1
 Imports: 
     ggplot2,
+    dplyr,
     cowplot,
     plyr,
     rlang,

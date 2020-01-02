@@ -300,7 +300,7 @@ while C++ version (like C++17) should be specified per `.cpp` file using `// [[R
 ## forcats
 
 ```{r message=FALSE}
-library(tidyverse)
+library(ggplot2)
 ```
 
 **factors** aims to handle categorical variables, i.e., `factor` class in R.
@@ -316,8 +316,9 @@ each level is associated with a `x` value (if multiple, use a function such as `
 ```{r fct-reorder, collapse=TRUE}
 with(iris, forcats::fct_reorder(Species, Sepal.Width)) %>% levels
 
-iris %>% group_by(Species) %>% summarise(Sepal.Width = median(Sepal.Width)) %>%
-    arrange(Sepal.Width) %>% .$Species %>% as.character()
+iris %>% dplyr::group_by(Species) %>% 
+   dplyr::summarise(Sepal.Width = median(Sepal.Width)) %>%
+   dplyr::arrange(Sepal.Width) %>% .$Species %>% as.character()
 ```
 
 As you can see in following plot, `Species` has been reordered by median of `Sepal.Width`.
@@ -327,7 +328,7 @@ cowplot::plot_grid(
     iris %>% 
         ggplot(aes(Species, Sepal.Width)) + geom_boxplot() + 
         labs(title = 'original'),
-    iris %>% mutate(Species = forcats::fct_reorder(Species, Sepal.Width)) %>%
+    iris %>% dplyr::mutate_at("Species", ~forcats::fct_reorder(., Sepal.Width)) %>%
         ggplot(aes(Species, Sepal.Width)) + geom_boxplot() + 
         labs(title = 'reorder')
 )
@@ -341,13 +342,13 @@ Each level is associated with many `x` values and many `y` values, we use a func
 
 ```{r fct-reorder2}
 set.seed(0)
-chkw <- ChickWeight %>% head(60) %>% mutate_at('Chick', forcats::fct_shuffle)
-
+chkw <- ChickWeight %>% head(60) %>% dplyr::mutate_at('Chick', forcats::fct_shuffle)
 
 with(chkw, forcats::fct_reorder2(Chick, Time, weight)) %>% levels()
 
-chkw %>% group_by(Chick) %>% arrange(desc(Time)) %>% slice(1) %>% ungroup() %>% 
-    arrange(desc(weight)) %>% .$Chick %>% as.character()
+chkw %>% dplyr::group_by(Chick) %>% dplyr::arrange(dplyr::desc(Time)) %>% 
+   dplyr::slice(1) %>% dplyr::ungroup() %>% 
+   dplyr::arrange(dplyr::desc(weight)) %>% .$Chick %>% as.character()
 ```
 
 As you can see in following plot, the vertical line (max `Time`), `Chick` has been reordered by `weight` at that line.
@@ -357,7 +358,7 @@ cowplot::plot_grid(
     chkw %>% 
         ggplot(aes(Time, weight, colour = Chick)) + geom_point() + geom_line() + 
         geom_vline(xintercept = 21, alpha = 0.2) + labs(title = 'original'),
-    chkw %>% mutate(Chick = forcats::fct_reorder2(Chick, Time, weight)) %>% 
+    chkw %>% dplyr::mutate_at("Chick", ~forcats::fct_reorder2(., Time, weight)) %>% 
         ggplot(aes(Time, weight, colour = Chick)) + geom_point() + geom_line() + 
         geom_vline(xintercept = 21, alpha = 0.2) + labs(title = 'reorder')
 )

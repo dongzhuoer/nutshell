@@ -41,11 +41,12 @@ knitr::opts_chunk$set(collapse = T, error = T, cache = T)
 > 在程序员中，有些人努力让自己像电脑一样思考，还有一些人则希望电脑能像人一样思考。  
 > 如果以上两条你都属于后者，那么本书应该对你很有帮助。
 
-最后附一下从 [R语言忍者秘笈](https://github.com/yihui/r-ninja) 改编过来的版权声明：
-
-本库中所有内容遵守[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)和AGPL-3.0混合协议，请君自重，别没事儿拿去传个什么新浪爱问百度文库以及XX经济论坛。有问题欢迎到Issues里面报告。如果你觉得任何内容侵犯了你的著作权，请随时联系[我](dongzhuoer@mail.nankai.edu.cn)，我会尽快处理。
 
 
+-----------------------
+[![Creative Commons License](https://i.creativecommons.org/l/by-nc/4.0/88x31.png)](http://creativecommons.org/licenses/by-nc/4.0/)  
+This work is licensed under a [Creative Commons Attribution-NonCommercial 4.0 International License](http://creativecommons.org/licenses/by-nc/4.0/)
 
-
-
+> 请君自重，别没事儿拿去传个什么新浪爱问百度文库以及XX经济论坛。  
+> 
+> --- https://github.com/yihui/r-ninja

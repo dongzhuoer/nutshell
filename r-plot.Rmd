@@ -38,7 +38,7 @@ ggplot(mtcars, aes(wt, mpg)) +
 		  legend.box.margin = margin(10,20,30,40))
 ```
 
-
+- [10 Levels of ggplot2: From Basic to Beautiful](https://medium.com/compassred-data-blog/10-levels-of-ggplot2-from-basic-to-beautiful-5ce3c4e7624f)
 
 
 

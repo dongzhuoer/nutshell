@@ -2,7 +2,11 @@
 
 
 
+see https://github.com/dongzhuoer/minir
 
+I try to minimize (no function, no data), but still overwhelm for beginners.
+
+`zzz.R` suggest by _R packages_, `aaa.R` not specail meaning (not need to be first file), just contrast `zzz.R`.
 
 
 ## basics

@@ -5,7 +5,9 @@
 
 
 
-## installing 
+## manage 
+
+### installing 
 
 > Windows 10 need Pro version, so we only talk about Ubuntu here.
 
@@ -23,10 +25,31 @@ sudo usermod -a -G docker $USER
 
 
 
+### clean
+
+```bash
+docker system prune
+docker rmi `docker images -f "dangling=true" -q`
+```
+
+
+
+
+
+## container
+
+for `docker run`:
+
+- `-dt` keeps the container running in the background
+- `--rm` automatically remove the container
+- `--restart unless-stopped` restart the container when you restart OS
+- after mount, existing files' user keeps unchanged, while new files belongs to user in the container (usually root). In other words, files produced by the container is very hard to manipulate on host OS.
 
 
 
 ## Dockerfile
+
+
 
 ### empty image
 

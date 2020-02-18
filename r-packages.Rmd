@@ -110,8 +110,11 @@ foobar <- function(...) {
 
 ### pkgdown
 
-- [Get startted](https://pkgdown.r-lib.org/articles/pkgdown.html)
-- [YAML config](https://pkgdown.r-lib.org/reference/build_site.html#yaml-config)
+- [edit](https://pkgdown.r-lib.org/reference/build_site.html#yaml-config) `pkgdown/_pkgdown.yml` [^I used to put it `inst/`, but I realized I'm not interested in building site from CRAN source package
+]
+- `pkgdown/extra.css` and `pkgdown/extra.js` allows minor customisation 
+- build into `pkgdown/output` since pkgdown refuses to overwrite non-empty directory (`pkgdown/`)
+
 
 
 

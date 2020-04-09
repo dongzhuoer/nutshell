@@ -115,6 +115,13 @@ qplot(1:10, 1:10) +
 ## graphics
 
 ```{r}
+# not avaliable in CRAN
+if(!("nutshell.bbdb" %in% .packages(T))) remotes::install_github("cran/nutshell.bbdb")
+if(!("nutshell.audioscrobbler" %in% .packages(T))) remotes::install_github("cran/nutshell.audioscrobbler")
+if(!("nutshell" %in% .packages(T))) remotes::install_github("cran/nutshell")
+```
+
+```{r}
 library(nutshell)
 library(learningr)
 

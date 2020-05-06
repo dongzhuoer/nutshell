@@ -1,0 +1,10 @@
+# Never use
+
+
+
+```r
+e1071::skewness
+e1071::kurtosis
+TukeyHSD
+```
+

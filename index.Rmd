@@ -12,10 +12,10 @@ output:
         dev: png
         highlight: haddock
         css: bookdown.css
-        split_by: section
+        split_by: chapter
         config:
             toc:
-                collapse: subsection
+                collapse: section
                 after: <li><a href="https://github.com/rstudio/bookdown" >Built by <strong>bookdown</strong></a></li>
             download: no
             sharing:
@@ -30,6 +30,9 @@ output:
 knitr::opts_chunk$set(collapse = T, error = T, cache = T)
 #, dpi = 144, fig.align = 'center', fig.show = 'asis', update.cache = T)
 ```
+
+
+
 
 # preface {-}
 

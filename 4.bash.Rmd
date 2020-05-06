@@ -1,7 +1,3 @@
-
-
-
-
 # Bash
 
 其实你应该把 bash 理解成一个跟桌面系统一样强大的程序。
@@ -10,13 +6,26 @@
 
 
 
+## trouble shooting
+
+- disable XON/XOFF to avoid conflict with search forward 
+
+```bash
+stty -ixon	# you can put it into ~/.bashrc
+```
+
+- when your cursor disappear, `echo -en "\e[?25h"`
+
+- use `\t` in regexp
+
+```bash
+cat filename | sed -nE $'/pattern\t/p' 
+cat filename | sed -nE '/pattern'$'\t''/p' # same as above
+```
 
 
-## terminal
 
-
-
-### shortcut
+## shortcut
 
 |          |                     |
 |:--------:|---------------------|
@@ -40,40 +49,18 @@
 
 
 
-### setting
-
-- disable XON/XOFF to avoid conflict with search forward 
-
-```bash
-stty -ixon	# you can put it into ~/.bashrc
-```
-
-- when your cursor disappear, `echo -en "\e[?25h"`
-
-
-
-
 ## job control
 
-We will use `find /` as example since it runs for a long time.
-
-
-### manipulate job
+One can use `find /` as example since it runs for a long time.
 
 - `fg %n` brings a job into the foreground
 - `bg %n` restarts a suspended background job
 - `jobs` lists jobs in the background
-- `kill -9 %n` terminates a job
+- `kill %n` terminates a job
 
-其中，`n` 是 job nubmer. [more ways to specify a job](http://tldp.org/LDP/abs/html/x9644.html#JOBIDTABLE).
+其中，`n` 是 job nubmer，`fg`, `bg` 默认为当前 job. [more ways to specify a job](http://tldp.org/LDP/abs/html/x9644.html#JOBIDTABLE).
 
-`fg`, `bg` 直接使用时，默认为当前 job。
-
-
-
-### run in background
-
-The are basically two ways:
+So there are basically two ways to run a process in the background:
 
 1. Add `&` to the end of a command.
 1. Run a command, press `C-z` to suspend and throw to the background, then `bg`.
@@ -81,24 +68,9 @@ The are basically two ways:
 
 
 
+## shell language
 
-
-## shell
-
-
-
-### use `\t` in regexp
-
-```bash
-cat filename | sed -nE $'/pattern\t/p' 
-cat filename | sed -nE '/pattern'$'\t''/p' # same as above
-```
-
-
-
-### function
-
-1. passing parameters
+- passing parameters
 
 ```{bash}
 bar() {
@@ -115,15 +87,13 @@ foo1 hello world
 foo2 hello world
 ```
 
+- array
 
-
-### array
-
-1. `array` returns the first element, the same as `array[0]`
-1. `@` or `*` means to get all elements of a array: `${array[@]}` or `${array[*]}` 
-1. `#` means get element number
-   - `${#array[@]}` returns array length
-   - `${#array}` returns the length of the first element
+  1. `array` returns the first element, the same as `array[0]`
+  1. `@` or `*` means to get all elements of a array: `${array[@]}` or `${array[*]}` 
+  1. `#` means get element number
+     + `${#array[@]}` returns array length
+     + `${#array}` returns the length of the first element
 
 
 

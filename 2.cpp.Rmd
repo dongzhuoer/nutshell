@@ -1,19 +1,13 @@
 # (PART) other language {-}
 
-其它编程语言。
+
+
 
 # C++
 
 
 
-
-
-
-## basic
-
-
-
-### Initialization
+## Initialization
 
 - 直接初始化
 
@@ -41,15 +35,7 @@ string s=string("Hello")
 
 
 
-### syntax
-
-```cpp
-f(1); //f (1); is also okay, but you'd better remove the space
-```
-
-
-
-### tips
+## tips
 
 ```cpp
 cout << typeid(1.2).name();

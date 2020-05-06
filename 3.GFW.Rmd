@@ -1,22 +1,20 @@
-# shadowsocks: bypassing GFW
+# bypass GFW 
 
 
 
+## V2Ray
+
+The next generation, to be continued.
 
 
 
-## Basics
-
-
+## shadowsocks
 
 ### installing
-
 
 - `sudo apt -y install python-pip python-m2crypto` ^[According to https://github.com/shadowsocks/shadowsocks/wiki/Encryption, installing M2Crypto will make encryption a little faster.]
 - `sudo -H pip install shadowsocks`
 - Chrome extension [SwitchyOmega](https://github.com/FelisCatus/SwitchyOmega/wiki/GFWList).
-
-
 
 ### configuration file
 
@@ -32,8 +30,6 @@
     "fast_open":   true
 }
 ```
-
-
 
 ### managing by systemd
 
@@ -52,9 +48,7 @@ WantedBy=multi-user.target
 - for client, use `sslocal` instead of `sserver`, and add `User=nobody` 
 - for CentOS, use `/usr/bin/` instead of `/usr/local/bin/` 
 
-
-
-### details about configuration file
+### details
 
 Refer to https://github.com/shadowsocks/shadowsocks/wiki/Configuration-via-Config-File .
 
@@ -94,110 +88,7 @@ Refer to https://github.com/shadowsocks/shadowsocks/wiki/Configuration-via-Confi
    >
    > --- https://github.com/shadowsocks/shadowsocks/issues/900
 
-
-
-
-
-
-## Advanced
-
-
-
 ### optimization
 
 - [kernel optimization](https://github.com/shadowsocks/shadowsocks/wiki/Optimizing-Shadowsocks) ^[That method trades off RAM for speed. Actually, there are only a few free memory left on my VPS, so it can hardly perform anything else after turning on this feature.]
 - [allow more open file descriptors](https://shadowsocks.org/en/config/advanced.html)
-
-
-
-
-### Firefox (deprecated)
-
-- entension: FoxProxy Standard
-- `Proxies` => `Add New Proxy` => Manual ... => IP, port, check SOCKS proxy, check SOCKS v5
-- `Pattern Subscriptions` => `http://firefoxfan.org/gfwlist/gfwlist.txt` => `Add Proxies` => `Refresh Now` => AutoProxy, Base64
-- Use proxies based on .....
-
-
-
-### managing by Supervisor (deprecated)
-
-```bash
-sudo apt -y install supervisor
-```
-
-`vim /etc/supervisor/conf.d/supervisord.conf`
-```
-[program:shadowsock-ipv4]
-command=ssserver -c /etc/shadowsocks/ipv4.json  
-autostart=true
-autorestart=true  
-user=root  
-```
-
-```bash
-supervisorctl reload
-supervisorctl status
-```
-
-- debug: `supervisorctl tail -f shadowsocks stderr`
-- max open files: add `ulimit -n 51200` in `/etc/default/supervisor` 
-
-
-
-### haproxy (deprecated)
-
-I had used Haproxy on laptop to switch between ipv4 and ipv6. Later I found it had no use at all, thus sticked to ipv4.
-
-```bash
-sudo apt -y install haproxy
-```
-
-Refer to http://tyr.gift/lb-pac-proxy.html .
-
-`sudo vim /etc/haproxy/haproxy-ss.cfg`
-```
-global
-    ulimit-n 51200
-    maxconn 4096
-
-defaults
-    mode    tcp
-    timeout connect 5s
-    timeout client  1m
-    timeout server  1m
-    balance roundrobin
-
-frontend shadowsocks-in
-    bind 127.0.0.1:1080
-    default_backend shadowsocks-out
-
-backend shadowsocks-out
-    server ipv4 127.0.0.1:1084 check inter 1500 rise 3 fall 3 backup
-    server ipv6 127.0.0.1:1086 check inter 1500 rise 3 fall 3    
-```
-
-`sudo vim /etc/systemd/system/haproxy-ss.service`
-```
-[Unit]
-Description=HAProxy Load Balancer for Shadowsocks client
-Documentation=man:haproxy(1)
-Documentation=file:/usr/share/doc/haproxy/configuration.txt.gz
-After=network.target syslog.service
-Wants=syslog.service shadowsocks-ipv4.service shadowsocks-ipv6.service
-
-[Service]
-Environment="CONFIG=/etc/haproxy/haproxy-ss.cfg" "PIDFILE=/run/haproxy-ss.pid"
-EnvironmentFile=-/etc/default/haproxy
-ExecStartPre=/usr/sbin/haproxy -f $CONFIG -c -q $EXTRAOPTS
-ExecStart=/usr/sbin/haproxy-systemd-wrapper -f $CONFIG -p $PIDFILE $EXTRAOPTS
-ExecReload=/usr/sbin/haproxy -f $CONFIG -c -q $EXTRAOPTS
-ExecReload=/bin/kill -USR2 $MAINPID
-KillMode=mixed
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-```
-
-

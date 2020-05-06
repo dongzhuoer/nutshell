@@ -1,0 +1,139 @@
+# R packages
+
+As I said before, R package is a very convenient ^[Maybe Python is more convenient, anyhow, I learned R first.] way to share code with others and, more importantly, myself. I create a template, [minir](https://github.com/dongzhuoer/minir), with the intention to minimize (no function, no data), but it still becomes a bit overwhelm for beginners. Anyhow, I will explain how to use it in great detail, especially why I choose one way instead of the other.
+
+
+
+## basics
+
+- dependency  
+  + All needed packages should be listed in `Imports` (we don't use `Depends`).
+  + `Remotes` only specifies where to _find_ a package _listed_ in `Imports`, if not from CRAN.
+
+- testthat
+  + If you want to run arbitrary code, add `testthat::expect_true(T)` to prevent it from being skipped.
+  + `testthat::test_dir()` dictate at least one `test-*.R` though `devtools::test()` only requires `tests/testthat/`.
+  + use `tolower(Sys.getenv('CI')) == 'true')` to selectively run some tests on Travis.
+
+- vignette 
+  + You should show things happened _after_ your package is installed, which means `library(pkg)` and `system.file(package = 'pkg')`. Counter-intuitive as it seems when you are developing a package, it's the most natural way for the user.
+
+- documentation 
+  + **Build** panel => `More` => `Configure Build Tools...` => `Configure...` => check **Build & Reload** ^[The option is saved in `.Rproj.user/***/build_options`, `***` is a hash string like `6AA761D1` to distinguish users.]. 
+  + use `foobar()` rather than `pkg::foobar()` in `@examples`, since there is an unspoken rule convention to assume `library(pkg)` and it makes testing examples very convenient (`More` => `Load All`). 
+  + `@export` means everywhere, `@noRd` means nowhere, `@keywords internal` means `?foobar` but not listed in index.
+
+- pkgdown
+  + [edit](https://pkgdown.r-lib.org/reference/build_site.html#yaml-config) `pkgdown/_pkgdown.yml` ^[I used to put it `inst/`, but I realized I have no interest in building site from CRAN source package.]
+  + build into `pkgdown/output` since pkgdown refuses to overwrite non-empty directory (`pkgdown/`)
+  + `pkgdown/extra.css` and `pkgdown/extra.js` allows minor customisation 
+
+- data
+  + `devtools::ues_data()` store each object _with its name_ in separate `.rds` file under `data/`.
+  + `devtools::ues_data(internal=TURE)` store all the internal data in a single file, `R/sysdata.rda`.
+  + refer to [rGEO.data](https://github.com/dongzhuoer/rGEO.data/blob/master/R-raw/data.Rmd) for how I cache data
+
+- others
+  + `zzz.R` suggest by _R packages_, `aaa.R` not specail meaning (not need to be first file), just contrast `zzz.R`.
+  + I use both [RStudio](https://www.rstudio.com/products/RStudio/) or [VSCode](https://code.visualstudio.com/), with a few convenient tasks for the latter.
+  + `.NotYetUsed()`, `.Deprecated()`, `.Defunct()`, `.Deprecated()`
+
+
+
+## namespace
+
+Usually, `@importFrom` should appear at the function using it (multiple times is okay, roxygen2 handles that).
+
+But some (_too_) common things are put into `R/aaa.R`:
+
+```r
+#' @importFrom magrittr %>%
+#' @export
+magrittr::`%>%`
+```
+
+1. Here we import `%>%`, since `devtools::test()` won't help us, even if we use `%>%` in our function without importing it. Actually, when tests are executed, **testthat** is loaded, even worse, it exports `%>%` (see `` testthat::`%>%` `` & `` ?`%>%` ``).
+2. Exporting `%>%` makes it easier to write tests & examples. Althougth you can live without it ^[Again, **testthat** exports %>%. Even if you use `%>%` in tests without exporting it, no one warns you.], users would be confusing when run the examples, since the basic assumption is that they have  `library()` your package.
+
+Opionally, you can also import other pipes:
+
+```r
+#' @importFrom magrittr %T>%
+#'
+NULL
+```
+
+> `NULL` is necessary, otherwise the command would be ignored.
+
+
+
+## Rcpp {#rcpp-in-package} 
+
+- set up
+  1. create a package (copy `minir`)
+  1. `usethis::use_rcpp()`
+  1. create a `.cpp` file in `src/`
+  1. set up appropriate `src/Makevars`, like: 
+     ```
+     PKG_CXXFLAGS = -std=c++17
+     ```
+     You should make it as portable as possible. For example, `CXX = clang++` is a bad idea here, since others may haven't install it and your code shouldn't depend on certain complier.
+  1. add to `zzz.R`
+     ```r
+     .onUnload <- function (libpath) {
+       library.dynam.unload("mypackage", libpath)
+     }
+     ```
+
+- best practice  
+  1. use `Build` or `Load All` intead of sourcing individual `.cpp` file. ^[Actually, writing a pakcage is the standard solution when you want to use more than one `.cpp` file.]
+  1. `.cpp` file in a package shouldn't contain `// [[Rcpp::plugins(cpp17)]]`, that's the job of `src/Makevars`
+
+- exporting & importing C++ code  
+  + refer to [here](https://bookdown.dongzhuoer.com/hadley/r-pkgs/src.html#cpp-export)  
+  + If you want to export some header files, put them into `inst/include`, [example](https://github.com/dongzhuoer/Rcppzhuoer/tree/master/inst/include)
+  + In rapidly development, you may add or remove `// [[Rcpp::interfaces(r, cpp)]]` in a `.cpp`, then you should use `Load All` since `Build` or `Document` would fail.
+
+
+
+## documentation template
+
+```r
+#' @title A sentence in one line.
+#'
+#' @description A paragraph which briefly describe what the function does,
+#'   usually supplements the title.
+#'
+#' @param name class. One sentence or paragraph.
+#' @param name1 integer scalar. When the length must be 1, add 'scalar'.
+#' @param name2 string. Means _character scalar_, consistent with C++.
+#' @param ...  passed onto [foo::bar()].
+#'
+#' @return list
+#'
+#'   1. x: string. name.
+#'
+#'   1. y: numeric. height.
+#'
+#' @details A (often long) section which goes into details about how the
+#'   function works.
+#'
+#'   Many paragraphs is ok.
+#'
+#' @seealso [foobar2]
+#'
+#' @examples
+#' foobar(1:5)
+#'
+#' \donotrun {
+#'     foobar("You're a doubi.")
+#' }
+#'
+#' @section Other points: One or many paragraphs.
+#'
+#' @export
+foobar <- function(...) {
+}
+```
+
+multiple functions [example](https://github.com/dongzhuoer/rexseek/blob/93f6e0c41f3362f2612778d985450fb687188041/R/normalization.R#L91)

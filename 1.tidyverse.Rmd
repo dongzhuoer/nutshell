@@ -1,0 +1,66 @@
+# tidyverse
+
+```{r message=FALSE}
+library(ggplot2)
+```
+
+
+
+- **factors** aims to handle categorical variables, i.e., `factor` class in R.
+
+
+
+## `forcats::fct_reorder(f, x)`   
+
+each level is associated with a `x` value (if multiple, use a function such as `median()` to generate a single value), the order is determined by sorting the corresponding `x` value.
+
+```{r fct-reorder, collapse=TRUE}
+with(iris, forcats::fct_reorder(Species, Sepal.Width)) %>% levels
+
+iris %>% dplyr::group_by(Species) %>% 
+   dplyr::summarise(Sepal.Width = median(Sepal.Width)) %>%
+   dplyr::arrange(Sepal.Width) %>% .$Species %>% as.character()
+```
+
+As you can see in following plot, `Species` has been reordered by median of `Sepal.Width`.
+
+```{r fct-reorder-plot, fig.cap='forcats::fct_reorder()'}
+cowplot::plot_grid(
+    iris %>% 
+        ggplot(aes(Species, Sepal.Width)) + geom_boxplot() + 
+        labs(title = 'original'),
+    iris %>% dplyr::mutate_at("Species", ~forcats::fct_reorder(., Sepal.Width)) %>%
+        ggplot(aes(Species, Sepal.Width)) + geom_boxplot() + 
+        labs(title = 'reorder')
+)
+```
+    
+
+
+## `forcats::fct_reorder2(f, x, y)`  
+
+Each level is associated with many `x` values and many `y` values, we use a function such as `max()` to select a `x` value, then we can get the corresponding `y` value. Now each level is associated with a single `y` value, and we can determine the order by sorting those `y` values. [^fct-reorder2-plot]
+
+```{r fct-reorder2}
+set.seed(0)
+chkw <- ChickWeight %>% head(60) %>% dplyr::mutate_at('Chick', forcats::fct_shuffle)
+
+with(chkw, forcats::fct_reorder2(Chick, Time, weight)) %>% levels()
+
+chkw %>% dplyr::group_by(Chick) %>% dplyr::arrange(dplyr::desc(Time)) %>% 
+   dplyr::slice(1) %>% dplyr::ungroup() %>% 
+   dplyr::arrange(dplyr::desc(weight)) %>% .$Chick %>% as.character()
+```
+
+As you can see in following plot, the vertical line (max `Time`), `Chick` has been reordered by `weight` at that line.
+
+```{r fct-reorder2-plot, fig.cap='forcats::fct_reorder2()'}
+cowplot::plot_grid(
+    chkw %>% 
+        ggplot(aes(Time, weight, colour = Chick)) + geom_point() + geom_line() + 
+        geom_vline(xintercept = 21, alpha = 0.2) + labs(title = 'original'),
+    chkw %>% dplyr::mutate_at("Chick", ~forcats::fct_reorder2(., Time, weight)) %>% 
+        ggplot(aes(Time, weight, colour = Chick)) + geom_point() + geom_line() + 
+        geom_vline(xintercept = 21, alpha = 0.2) + labs(title = 'reorder')
+)
+```

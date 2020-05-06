@@ -1,0 +1,36 @@
+# (PART) R {-}
+
+
+
+# R language
+
+This part includes basic & adavanced, elegant & crazy, and three reason I like R best:
+- convenient to share code by R package
+- automatically report with R markdown
+- wonderful packages for data manipulation and visualization
+
+
+
+## when I  use `<-`
+
+1. function definition
+2. initialize varible, especially when definition is far from first usage (initialize means you create the varible only once)
+3. `foobar(...) <- value`, though it's okay to use `=`, but modifing arguments using function is rare in R, so use `<-` can help you remind what you are doing and be consistency with how the function is defined
+
+
+
+## Tips
+
+- `match.arg()`
+- `remotes::package_deps(.packages(T)) %>% tibble::as_tibble()`
+
+
+
+## install packages
+
+- `remotes::install_bioc('3.7/ggtree')` looks good, however, this only works _package-wise_, i,e, dependency packages still use the default Bioconductor version ^[At the time of this writing, `remotes::install_bioc('clusterProfiler')` would use Bioconductor 3.8].
+
+1. `/usr/lib/R/library` should keep clean, which makes it very convenient to update or reinstall R.
+1. `/usr/lib/R/site-library` is useful when there are many users, and they all need many common packages. ^[Another example is a server with Shiny Server installed. There `root` may need some packages for Shiny apps hosted. And the normal user can also use these packages, although he may not need.]
+1. `/usr/local/lib/R/site-library` should be removed ^[I get duplicated packages when I use `source("https://install-github.me/username/repo")`].
+1. user library, I prefer to use `~/.local/lib/R` ^[add `R_LIBS_USER="~/.local/lib/R"` in `~/.Renviron`], although RStudio's default is `/home/${USER}/R/x86_64-pc-linux-gnu-library/3.4`.

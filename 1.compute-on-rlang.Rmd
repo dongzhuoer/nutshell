@@ -1,0 +1,76 @@
+
+
+
+# Compute on the language
+
+R is very powerful with the ability of "[Computing on the Language](https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Computing-on-the-language)"（基于语言的计算） involving function, evaluation and environment.
+
+
+
+## core rules
+
+1. lazy evaluation to decide when to evaluate the parameter, 
+2. call stack to decide where (start point) to evaluate the argument
+3. lexically scoping to where to find undefined symbol in the argument
+
+
+
+## lazy evaluation
+
+```{r}
+f <- function(x) {y <- 1; message('in f()'); x;}
+
+f(message('evaluate argument'))
+```
+
+In `f()`, the parameter `x` is not evaluated until it's used, i.e., after `message('in f()')`.
+
+
+```{r}
+f <- function(x) {message('in f()'); g(x)}
+g <- function(x) {message('in g()'); x}
+
+f(message('evaluate argument'))
+```
+
+In `f()`, passing the parameter `x` as argument for `g()` doesn't evaluate it.
+
+
+
+## call stack
+
+```{r}
+f <- function(x) {message('in f()'); g(x)}
+g <- function(x) {message('in g()'); y <- 2; x}
+
+y <- 1
+f(message('y = ', y))
+```
+
+We already know that, `message('y = ', y)` is lazy evaluated after `y <- 2` inside `g()`. However，when the evaluation happens, the stage is NOT the execution env of `g()`. Rather, we start from there, backtrack the call stack,  until we arrive the start point, i.e., the caller env of `f()` (the global env here).
+
+
+
+## lexically scoping
+
+```{r}
+g <- function(u) (u + v) / 2  
+h <- function(u) {
+    v <- 1  
+    g(u)    
+}    
+v <- 2  
+h(10)
+```
+
+Although `g()` is called inside `h()`, it finds `v` in where it's defined, i.e., the global env.
+
+Actually, lexically scoping is not a special rule, and the implemention is rather straightforward. The execution environment's parent is function environment, i.e., when the function is created. So we just need to follow the general rule of parent environment.
+
+
+
+## technical details
+
+1. the evaluation of argument happens only once, refer to [here](https://bookdown.dongzhuoer.com/hadley/adv-r/lazy-evaluation.html#promises) 
+1. call stack is implemented in that a frame's parent is the previous frame, refer to [here](https://bookdown.dongzhuoer.com/hadley/adv-r/call-stack.html#frames)
+1. when you write a function factory, you may need to [force evaluation](https://bookdown.dongzhuoer.com/hadley/adv-r/factory-fundamentals.html#forcing-evaluation)

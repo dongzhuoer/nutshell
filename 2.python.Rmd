@@ -1,0 +1,34 @@
+# Python
+
+
+
+## tips
+
+- **PEP 8** compliance  `py.test --pep8 main.py`
+- **Spyder** project must have `.spyproject` folder. I suggest add `.spyproject/encoding.ini` to Git since it's quiet stable.
+
+
+
+## cuda error
+
+```bash
+sudo rmmod nvidia_uvm
+sudo modprobe nvidia_uvm
+```
+
+if `rmmod: ERROR: Module nvidia_uvm is in use`, 
+
+```
+lsof 2> /dev/null | grep nvidia.uvm
+# then kill the process
+```
+
+
+
+### setting
+
+```{bash}
+python3       -E -c 'import sys; print(sys.path)'
+python3    -s -E -c 'import sys; print(sys.path)'
+python3 -S -s -E -c 'import sys; print(sys.path)'
+```

@@ -9,7 +9,8 @@
 
 当时花了我不少功夫，虽然后来好多都没用上，但在 code editing 方面 VScode 简直是不要太爽。
 
-- `Select`: Quick and Simple Text Selection，press twice to select outer.
+- contact me for `keybindings.json`
+- `Select` means _Quick and Simple Text Selection_ extension，press twice to select outer.
 
 
 

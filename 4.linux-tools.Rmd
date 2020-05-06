@@ -1,0 +1,68 @@
+# Linux tools
+
+- `which`
+- `whatis` 
+- `apropos`
+- `type`
+
+
+
+## Git
+
+- clean (the best way is to delete and re-clone)
+
+```bash
+git reset --hard	 # revert all modified files
+git clean -fd		 # remove all untracked files and folders
+```
+
+- untrack files
+
+```bash
+git rm --cached path/to/file
+git update-index --assume-unchanged path/to/file
+```
+
+- config (`~/.gitconfig`)
+
+```bash
+git config --global user.name "ZhuoerDong"
+```
+
+- print alias
+
+```bash
+$git help co
+'co' is aliased to 'checkout'
+```
+
+- orphan branch (keep an `empty` branch to `checkout` from if you frequently use this)
+
+```bash
+git checkout --orphan foobar
+git rm --cached *  # I suggest VSCode's `Ustage All Changes`            
+echo haha > readme.md && git add readme.md && git commint -m 'initial'
+git push --set-upstream origin foobar
+```
+
+
+
+## Vim 
+
+- insert output of a command
+
+Press ':' in command mode would switch to command-line mode, then you can use `!command` to execute the command you want, such as `!ls`.
+
+However, if you _don't_ press ':', but _directly_ press `!*command` ^[`*` means any normal key, for example, if you type `!als`, the command to execute will be `ls`] instead, the output of the command will be _inserted_ into the current document and _replace_ the current line.
+
+- paste as is
+
+```
+set paste
+```
+
+- copy to clipboard (may need install `vim-gui-common`)
+
+```
+set clipboard=unnamedplus
+```

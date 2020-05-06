@@ -6,18 +6,20 @@ edit: https://github.com/dongzhuoer/nutshell/edit/master/%s
 before_chapter_script: _common.R
 rmd_files:
   - index.Rmd
-  - r.Rmd
-  - r-plot.Rmd
-  - rmarkdown.Rmd
-  - r-packages.Rmd
-  - cpp.Rmd
-  - python.Rmd
-  - yaml.Rmd
-  - linux-management.Rmd
-  - linux-tools.Rmd
-  - bash.Rmd
-  - docker.Rmd
-  - travis.Rmd
-  - software.Rmd
-  - shadowsocks.Rmd
-
+  - 1.r.Rmd
+  - 1.compute-on-rlang.Rmd
+  - 1.Rcpp.Rmd
+  - 1.r-packages.Rmd
+  - 1.rmarkdown.Rmd
+  - 1.tidyverse.Rmd
+  - 2.cpp.Rmd
+  - 2.python.Rmd
+  - 2.yaml.Rmd
+  - 3.travis.Rmd
+  - 3.docker.Rmd
+  - 3.GFW.Rmd
+  - 4.linux.Rmd
+  - 4.bash.Rmd
+  - 4.linux-tools.Rmd
+  - 4.software.Rmd
+  - no-use.Rmd

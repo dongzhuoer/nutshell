@@ -6,7 +6,9 @@ Programming in a nutshell
 remotes::install_local()
 ```
 
+# to do:
 
+nutshell 怎么不按顺序来呢？而且 nutshell.bbdb 已经指定为 remote 了，怎么找不到呢？（也许在 installr 建一个 DESCRIPTION）
 
 # add chapter
 

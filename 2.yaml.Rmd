@@ -1,21 +1,12 @@
-# YAML, etc
+# YAML
 
-This chapter aims to include simple language, althought currently only include YAML
-
-
+YAML is my favorite configuration language
 
 
 
-
-## YAML
+## basics
 
 > 用相同数目的空格（我推荐 4个）缩进元素，来表示层级关系。
-
-See [中文教程](http://www.ruanyifeng.com/blog/2016/07/yaml.html) for detailed guide. Here we mainly talked about YAML used for configuration.
-
-
-
-### basics
 
 ```yaml
 age: 27
@@ -29,7 +20,7 @@ websites:
 
 
 
-### yes or no, that is a question
+## yes or no, that is a question
 
 这一节是我无意中发现的，当时在纠结到底应该写 `yes|no` 还是 `true|false`（最后我选择了前者，因为 YAML 强调 human-readable）。
 
@@ -66,12 +57,3 @@ y|Y|yes|Yes|YES|n|N|no|No|NO
 ```
 
 Wa, the world is so nice!
-
-
-
-
-
-
-## TOML
-
-To be written.

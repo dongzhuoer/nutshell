@@ -13,12 +13,5 @@ Imports:
     tibble,
     Hmisc,
     yaml,
-    testthat,
-    nutshell.bbdb,
-    nutshell.audioscrobbler,
-    nutshell
-Remotes:
-    cran/nutshell,
-    cran/nutshell.bbdb,
-    cran/nutshell.audioscrobbler
+    testthat
     

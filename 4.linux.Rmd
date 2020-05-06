@@ -1,0 +1,96 @@
+# (PART) OS {-}
+
+
+
+# Master Linux 
+
+
+
+## miscellaneous
+
+- when you always see a system alert, `sudo rm /var/crash/*`
+- If you find something wrong abount SSH, ensure that the user's login shell is `/bin/bash`.
+- `unar` (`lsar`) 可自动解决 `.zip` 乱码问题
+- [understanding `~/.bashrc`](https://dongzhuoer.com/post/caprice/2018/bashrc/)
+
+
+
+## inspect and monitor
+
+- system version
+
+```bash
+uname -r                       # kernel version
+cat /etc/debian_version        # Debian version
+cat /etc/lsb-release           # especially useful for Docker image
+```
+
+- cpu
+
+```bash
+grep 'physical id' /proc/cpuinfo | sort -u          # processors
+grep 'core id'     /proc/cpuinfo | sort -u | wc -l  # cores per processors
+grep 'processor'   /proc/cpuinfo | sort -u | wc -l  # threads
+```
+
+- port and traffic
+
+```bash
+sudo lsof -i -P -n | grep LISTEN    # IPv4/6, ssh -> 22, localhost -> 127.0.0.1
+netstat -tulpn      # tcp, udp, listen, show process, ssh -> 22
+sudo iftop -P
+sudo tcptrack -i wlp2s0  # port 1080
+```
+
+- file system
+
+```bash
+du . -d 1 -h
+df -h
+sudo blkid
+lsblk # -f
+```
+
+- process
+
+```bash
+ps -aux  # 观察系统所有的程序数据
+ps -axjf # 连同部分程序树状态
+pstree
+```
+
+
+
+## account
+
+- add account 
+
+Don't use `-p password`, it's wrong and **unsafe**. Because it saves the password directly instead of hashed code into `/etc/shadow` ^[You can use `sudo grep username /etc/shadow` to verify, note that `password` is shown unencrypted.].
+
+```bash
+sudo useradd -m -s /bin/bash username  
+echo 'username:password' | sudo chpasswd
+```
+
+- group
+
+Add user to `sudo` group (`wheel` for CentOS) can assign root privilege.
+
+```bash
+sudo usermod -g group username                       # change initial group
+sudo usermod [-a] -G group1, group2 username      # append or change
+```
+
+- others
+  + In `man` page, `LOGIN` (`-l` option) means username 
+  + `id`, `who`
+
+
+
+## systemd
+
+- [阮一峰中文教程](http://www.ruanyifeng.com/blog/2016/03/systemd-tutorial-commands.html)
+- [Red Hat documentation](https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/System_Administrators_Guide/chap-Managing_Services_with_systemd.html)
+- `man systemd.service`
+- [override some settings in `.service` without modifying original file](https://dongzhuoer.com/post/caprice/2018/systemd-crash-teach-me-overwriting-service)
+

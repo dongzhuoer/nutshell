@@ -7,11 +7,12 @@ before_chapter_script: _common.R
 rmd_files:
   - index.Rmd
   - 1.r.Rmd
-  - 1.compute-on-rlang.Rmd
-  - 1.Rcpp.Rmd
   - 1.r-packages.Rmd
   - 1.rmarkdown.Rmd
+  - 1.compute-on-rlang.Rmd
+  - 1.r-plot.Rmd
   - 1.tidyverse.Rmd
+  - 1.Rcpp.Rmd
   - 2.cpp.Rmd
   - 2.python.Rmd
   - 2.yaml.Rmd

@@ -2,9 +2,6 @@
 
 
 
-
-
-
 ## ggplot2
 
 ```{r}
@@ -42,8 +39,9 @@ ggplot(mtcars, aes(wt, mpg)) +
 
 
 
-
 ## multi-plot
+
+- 排列 plot，唯 patchwork 不破
 
 we use `cowplot::plot_grid()` as reference
 
@@ -109,17 +107,19 @@ qplot(1:10, 1:10) +
 
 
 
+## graphics: prepare
 
-
-
-## graphics
-
-```{r}
+```{r install-nutshell, cache=FALSE, include=FALSE}
 # not avaliable in CRAN
 if(!("nutshell.bbdb" %in% .packages(T))) remotes::install_github("cran/nutshell.bbdb")
 if(!("nutshell.audioscrobbler" %in% .packages(T))) remotes::install_github("cran/nutshell.audioscrobbler")
 if(!("nutshell" %in% .packages(T))) remotes::install_github("cran/nutshell")
+if(!("learningr" %in% .packages(T))) remotes::install_github("cran/learningr")
 ```
+
+```{r install-nutshell, eval=FALSE}
+```
+
 
 ```{r}
 library(nutshell)
@@ -150,9 +150,9 @@ ovm = within(obama_vs_mccain, Region <- reorder(Region, Obama, median))
 
 
 
-### univariate plot
+## graphics: univariate plot
 
-#### pie chart
+### pie chart
 
 ```{r fig.dim=c(6,4)}
 c(
@@ -163,7 +163,7 @@ c(
 ) %>% pie(main = "domestic catch 2006")
 ```
 
-#### bar chart
+### bar chart
 
 transform data.frame into a matrix for barplot
 
@@ -185,7 +185,7 @@ barplot(
 )
 ```
 
-#### histogram
+### histogram
 
 ```{r fig.dim=c(8,6)}
 as_ggplot_list(
@@ -204,20 +204,20 @@ hist(obama_vs_mccain$Obama, nclass.scott, main = "A function for the number of b
 hist(obama_vs_mccain$Obama, function(x) {seq(min(x), max(x), length.out = 50)}, main = "A function for the bin edges")
 ```
 
-#### denstity plot
+### denstity plot
 
 ```{r}
 plot(density(bat[bat$PA > 25,"PA"]))
 rug(bat[bat$PA > 25,"PA"])  #added to the above
 ```
 
-#### quantile plot
+### quantile plot
 
 ```{r}
 qqnorm(bat$AB)
 ```
 
-#### time series plot
+### time series plot
 
 `acf()` computes and plots the autocorrelation function for a time series:
 
@@ -230,9 +230,9 @@ as_ggplot_list(
 
 
 
-### bivariate plot
+## graphics: bivariate plot
 
-#### scatter plot
+### scatter plot
 
 ```{r fig.width=8}
 as_ggplot_list(
@@ -246,7 +246,6 @@ pairs of correlation
 ```{r fig.width=9}
 plot(bat[,c("H","R","SO","BB","HR")], main = '')
 ```
-
 
 add text labels
 
@@ -267,8 +266,7 @@ point shape is specified by `pch` (plotting character)
 plot(1:25, pch = 1:25, bg = "blue")
 ```
 
-
-#### line plot
+### line plot
 
 line plots are created in the same way as scatterplots, except that they take the argument **type = "l"**
 
@@ -278,7 +276,7 @@ plot(crab_tag$daylog$Date, -crab_tag$daylog$Max.Depth, type = "l", ylim = c(-max
 lines(crab_tag$daylog$Date, -crab_tag$daylog$Min.Depth, col = "blue")
 ```
 
-#### box plot
+### box plot
 
 1. The box shows the interquartile range, which contains values between the 25th and 75th percentile;  
 2. The line inside the box shows the median;
@@ -298,7 +296,7 @@ as_ggplot_list(
 ) %>% gridExtra::grid.arrange(grobs = ., nrow = 1)
 ```
 
-#### plot categorical data
+### plot categorical data
 
 ```{r}
 # conditional density of a set of categories dependent on a numeric value
@@ -310,7 +308,7 @@ assocplot(table(bat.w.names$bats, bat.w.names$throws), xlab = "Throws", ylab = "
 
 
 
-### trivariate plot
+## graphics: trivariate plot
 
 we need to make two transformations:
 
@@ -325,8 +323,7 @@ col = ncol(yosemite)
 halfdome <- yosemite[(row - col + 1):row, col:1]
 ```
 
-#### `persp()` and `headmap()`
-
+### `persp()` and `headmap()`
 
 
 ```{r}
@@ -338,7 +335,7 @@ persp(halfdome, col = grey(.25), border = NA, expand = .15, theta = 225, phi = 2
 heatmap(yosemite)
 ```
 
-#### `image()` and `contour()`
+### `image()` and `contour()`
 
 `image()` plot a matrix of data points as a grid of boxes, color coding the boxes based on the intensity at each location.
 
@@ -359,9 +356,9 @@ contour(yosemite, asp = col/row, ylim = c(1,0), add = T)
 
 
 
-### customizing charts
+## graphics: customizing charts
 
-#### graphical parameters
+### graphical parameters
 
 - get
 
@@ -376,7 +373,7 @@ head(par(),3)
 par(bg = "transparent")
 ```
 
-#### mutliple plots
+### mutliple plots
 
 ```{r fig.dim=c(6, 5)}
 par(mfcol = c(2,2))
@@ -387,7 +384,7 @@ qqnorm(rnorm(100))
 hist(rnorm(10000))
 ```
 
-#### low-level graphics functions
+### low-level graphics functions
 
 - `abline()`
 
@@ -409,10 +406,7 @@ polygon(x = c(2,2,4,4),y = c(2,4,4,2))
 
 
 
-
-
-
-## lattice
+## lattice: introduction
 
 ```{r}
 library(lattice)
@@ -429,16 +423,14 @@ ovm = within(obama_vs_mccain, Region <- reorder(Region, Obama, median))
 ovm2 <- ovm[!(ovm$State %in% c("Alaska", "Hawaii")), ]
 ```
 
-### introduction
-
-#### how lattice works
+### how lattice works
 
 1. The end user calls a high-level lattice plotting function.
 2. The **lattice** function examines the calling arguments and default parameters, assembles a lattice object, and returns the object. (Note that the class of the object is actually **trellis**.)
 3. The user calls **plot.trellis** or **plot.trellis** with the lattice object as an argument. (This typically happens automatically on the R console.)
 4. The function **plot.trellis** sets up the matrix of panels, assigns packets to different panels and then calls the panel function specified in the lattice object to draw the individual panels.
 
-#### a simple example
+### a simple example
 
 ```{r}
 (d <- data.frame(x = c(0:9), y = c(1:10), z = c(rep(c("a", "b"), times = 5))))
@@ -457,7 +449,7 @@ xyplot(
 )
 ```
 
-#### store lattice plots and update
+### store lattice plots and update
 
 ```{r}
 (lat1 <- xyplot(Turnout ~ Income | Region,obama_vs_mccain))
@@ -466,9 +458,9 @@ xyplot(
 
 
 
-### univariate plot
+## lattice: univariate plot
 
-#### bar chart
+### bar chart
 
 - one-dimentional table
 
@@ -492,7 +484,6 @@ barchart(dob.dm.tbl, stack = F, auto.key = T)
 barchart(dob.dm.tbl, horizontal = F, groups = F)
 ```
 
-
 - data frame
 
 ```{r}
@@ -504,8 +495,7 @@ barchart(State ~ Catholic, ovm2)
 barchart(State ~ Catholic + Protestant + Non.religious + Other, ovm2, stack = T)
 ```
 
-
-#### dot plot
+### dot plot
 
 - three-dimensional table
 
@@ -523,7 +513,7 @@ tires.sus$Speed_At_Failure_km_h %>% tibble::as_tibble()
 dotplot(as.factor(Speed_At_Failure_km_h) ~ Time_To_Failure | Tire_Type, tires.sus)
 ```
 
-#### histogram
+### histogram
 
 ```{r}
 histogram(~ Obama, obama_vs_mccain)    
@@ -535,7 +525,7 @@ histogram(~DBWT | DPLURAL, births)
 histogram(~DBWT | DPLURAL, births, layout = c(1,5))
 ```
 
-#### denstity plot
+### denstity plot
 
 ```{r}
 (plur = unique(as.character(births$DPLURAL))[4:5]) #quadruplet or higher
@@ -549,7 +539,7 @@ densityplot(~DBWT | DPLURAL, births, layout = c(1,5), plot.points = F)
 densityplot(~DBWT, groups = DPLURAL, births, plot.points = F, auto.key = T)
 ```
 
-#### strip plot
+### strip plot
 
 You can think of strip plots as one-dimensional scatter plots:
 
@@ -558,7 +548,7 @@ You can think of strip plots as one-dimensional scatter plots:
 stripplot(~DBWT, births, jitter.data = T, subset = (DPLURAL %in% plur))
 ```
 
-#### quantile plot
+### quantile plot
 
 ```{r}
 qqmath(rnorm(100000))
@@ -576,9 +566,10 @@ qqmath(~log(price), groups = Hmisc::cut2(squarefeet, g = 6), san,
 ```
 
 
-### bivariate plot
 
-#### scatter plot
+## lattice: bivariate plot
+
+### scatter plot
 
 ```{r}
 xyplot(Turnout ~ Income, obama_vs_mccain, col = "violet", pch = 20)
@@ -589,7 +580,6 @@ xyplot(Turnout ~ Income, obama_vs_mccain, scales = list(y = list(log = TRUE)))
 xyplot(Turnout ~ Income | Region, obama_vs_mccain, layout = c(5, 2),
        scales = list(log = T, relation = "same", alternating = F))
 ```
-
 
 ```{r}
 dollars.per.squarefoot <- with(san, mean(price / squarefeet, na.rm = T))
@@ -624,6 +614,9 @@ bwplot(log(price) ~ cut(date,"month"), san, scales = list(x = list(rot = 90)))
 ```
 
 
+
+## lattice: others
+
 ### trivariate plot
 
 ```{r}
@@ -643,10 +636,8 @@ levelplot(with(san, table(cut(longitude, 25),
 - `lattice::cloud()`
 - `lattice::wireframe()`
 
+### residual and fit-spread (RFS) plot
 
-### other plot
-
-#### residual and fit-spread (RFS) plot
 ```{r}
 model = lm(runs~singles + doubles + triples + stolenbases + homeruns + walks 
            + hitbypitch + sacrificeflies + caughtstealing, team.batting.00to08)
@@ -657,28 +648,27 @@ rfs(model)
 rfs(model,distribution  =  qnorm)
 ```
 
+### get parameters
 
-### lattice parameters
-
-#### get
 ```{r}
 trellis.par.get("clip")
 
 head(trellis.par.get(), 3)
 ```
 
-#### set
+### set parameters
+
 ```{r}
 trellis.par.set(list(axis.text = list(cex = .5)))
 ```
 
-#### nicer show
+### nicer show
 
 ```{r}
 show.settings()
 ```
 
-#### deep diving
+### deep diving
 
 There are a total of 378 parameters. However, there are only 46 unique parameters within these groups:
 ```{r}
@@ -691,4 +681,3 @@ length(unlist(trellis.par.get()))
     length(table(p))
 })()
 ```
-

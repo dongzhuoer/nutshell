@@ -315,7 +315,7 @@ we need to make two transformations:
 1. In the data file, values move east to west (or left to right) as x indices increase and from north to south (or top to bottom) as y indices increase. Unfortunately, **persp**  plots increasing y coordinates from bottom to top.  
 2. We need to select only a square subset of the elevation points.
 
-To plot the figure, we rotate the image by 225?? (through **theta=225**), change the viewing angle to 20?? (**phi=20**), adjuste the light source to be from a 45?? angle (**ltheta=45**) and set the shading factor to 0.75 (**shade=.75**) to exaggerate topological features.
+To plot the figure, we rotate the image by 225° (through **theta=225**), change the viewing angle to 20° (**phi=20**), adjuste the light source to be from a 45° angle (**ltheta=45**) and set the shading factor to 0.75 (**shade=.75**) to exaggerate topological features.
 
 ```{r}
 row = nrow(yosemite)

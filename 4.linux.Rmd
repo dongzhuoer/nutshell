@@ -17,6 +17,14 @@
 
 ## inspect and monitor
 
+- list package files
+
+```bash
+dpkg -c *.deb
+dpkg -L package       # installed  
+apt-file list package # apt repository
+```
+
 - system version
 
 ```bash
@@ -93,4 +101,3 @@ sudo usermod [-a] -G group1, group2 username      # append or change
 - [Red Hat documentation](https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/System_Administrators_Guide/chap-Managing_Services_with_systemd.html)
 - `man systemd.service`
 - [override some settings in `.service` without modifying original file](https://dongzhuoer.com/post/caprice/2018/systemd-crash-teach-me-overwriting-service)
-

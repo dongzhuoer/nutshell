@@ -9,31 +9,26 @@
 
 ## Git
 
-- clean (the best way is to delete and re-clone)
+Git 千万不要把 branch 想象成一整段树枝 ^[在我入门后，这种思维使我很难理解一些高级操作，本以为要看书学会全部 implementation 细节才能弄懂，没想到（2021-02-21）在处理实际问题时先把这个学会了，其它的不学也没关系。]，branch 只是 commit 树的一个指针而已，迭代追溯父节点即可得树枝。
+
+如 A->B->C->D，如果 master 指向 D，那么一直向前到起点就是 DCBA；把 master `reset` 到 C 后，就变成 CBA。
+
+- 当前修改暂不 commit，但又担心丢失，就用 branch 来保存
+
+记住 master hash，如 074c; 建立新 branch（如 temp），commit 修改
 
 ```bash
-git reset --hard	 # revert all modified files
-git clean -fd		 # remove all untracked files and folders
+git checkout master    # working tree 与上次 commit 一摸一样
+git reset --hard temp  # 找回当前修改，副作用使 master 与 temp 一样
+git reset 074c         # 把 master 重新指向上次 commit
 ```
 
-- untrack files
+- commands
 
 ```bash
-git rm --cached path/to/file
-git update-index --assume-unchanged path/to/file
-```
-
-- config (`~/.gitconfig`)
-
-```bash
-git config --global user.name "ZhuoerDong"
-```
-
-- print alias
-
-```bash
-$git help co
-'co' is aliased to 'checkout'
+git clean -fd		 # remove all untracked File and Directory
+git update-index --assume-unchanged path/to/file  # untrack
+git help co   # print alias
 ```
 
 - orphan branch (keep an `empty` branch to `checkout` from if you frequently use this)

@@ -23,6 +23,8 @@ This part includes basic & adavanced, elegant & crazy, and three reason I like R
 
 - `match.arg()`
 - `remotes::package_deps(.packages(T)) %>% tibble::as_tibble()`
+- `waldo::compare()`
+- `extrafont::font_import("~/.fonts", prompt = F)`
 
 
 

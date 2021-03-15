@@ -1,6 +1,21 @@
 # plot with R
 
 
+## font
+
+```r
+systemfonts::system_fonts() |> dplyr::filter(stringr::str_detect(name, "Hel")) |> dplyr::select(-1)
+windowsFonts("Arial" = windowsFont("Arial"))  # for Windows
+```
+
+- compare fonts and confirm your configuration
+
+```r
+library(patchwork)
+text = paste0(letters, LETTERS, collapse = "")
+wrap_elements(grid::textGrob(text, gp=grid::gpar(fontsize=50, fontfamily="Arial")))/wrap_elements(grid::textGrob(text, gp=grid::gpar(fontsize=50, fontfamily="Helvetica")))
+```
+
 
 ## ggplot2
 

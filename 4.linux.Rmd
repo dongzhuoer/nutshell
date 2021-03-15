@@ -87,6 +87,7 @@ Add user to `sudo` group (`wheel` for CentOS) can assign root privilege.
 ```bash
 sudo usermod -g group username                       # change initial group
 sudo usermod [-a] -G group1, group2 username      # append or change
+sudo gpasswd --delete username group
 ```
 
 - others

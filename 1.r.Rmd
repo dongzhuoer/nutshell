@@ -11,20 +11,19 @@ This part includes basic & adavanced, elegant & crazy, and three reason I like R
 
 
 
-## when I  use `<-`
-
-1. function definition
-2. initialize varible, especially when definition is far from first usage (initialize means you create the varible only once)
-3. `foobar(...) <- value`, though it's okay to use `=`, but modifing arguments using function is rare in R, so use `<-` can help you remind what you are doing and be consistency with how the function is defined
-
-
-
 ## Tips
 
 - `match.arg()`
 - `remotes::package_deps(.packages(T)) %>% tibble::as_tibble()`
 - `waldo::compare()`
-- `extrafont::font_import("~/.fonts", prompt = F)`
+
+
+
+## when I  use `<-`
+
+1. function definition
+2. initialize varible, especially when definition is far from first usage (initialize means you create the varible only once)
+3. `foobar(...) <- value`, though it's okay to use `=`, but modifing arguments using function is rare in R, so use `<-` can help you remind what you are doing and be consistency with how the function is defined
 
 
 
